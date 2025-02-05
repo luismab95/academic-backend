@@ -20,7 +20,7 @@ export class PostgreDeviceRepository implements DeviceRepository {
     });
   }
 
-  async findDeviceBySerie(serie: string): Promise<Device | undefined> {
+  async findDeviceBySerie(serie: string): Promise<Device | null> {
     return await this.deviceRepository.findOne({ where: { serie: serie } });
   }
 }

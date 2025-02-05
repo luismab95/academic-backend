@@ -19,13 +19,13 @@ export class UserService {
     password: string,
     identification: string
   ) {
-    const encrypPassword = await encryptPassword(password);
+    const encryptedPassword = await encryptPassword(password);
     const newUser = {
       name,
       lastname,
       identification,
       email,
-      password: encrypPassword,
+      password: encryptedPassword,
     } as User;
 
     return await this.userRepository.createUser(newUser);
@@ -33,6 +33,7 @@ export class UserService {
 
   async updateUser(id: number, user: User) {
     const userExists = await this.userRepository.getUserById(id);
+    
     if (!userExists) {
       throw new ErrorResponse("Usuario no encontrado", 400);
     }
@@ -42,12 +43,12 @@ export class UserService {
   }
 
   async updatePassword(
-    id: number,
+    userId: number,
     password: string,
     otp: string,
     method: OtpType
   ) {
-    const userExists = await this.userRepository.getUserById(id);
+    const userExists = await this.userRepository.getUserById(userId);
     if (!userExists) {
       throw new ErrorResponse("Usuario no encontrado", 400);
     }

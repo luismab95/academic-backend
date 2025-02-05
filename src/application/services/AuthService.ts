@@ -8,13 +8,14 @@ import {
   generateSHA256Hash,
   generateToken,
 } from "../../shared/helpers/";
-import { AuthRepository, EmailRepository } from "../../domain/repositories";
+import { AuthRepository, DeviceRepository, EmailRepository } from "../../domain/repositories";
 import { Email, Mfa, OtpType, Session } from "../../domain/entities";
 
 export class AuthService {
   constructor(
     private readonly authRepository: AuthRepository,
-    private readonly emailRepository: EmailRepository
+    private readonly emailRepository: EmailRepository,
+    private readonly deviceRepository: DeviceRepository,
   ) {}
 
   async signIn(email: string, password: string) {
@@ -83,7 +84,7 @@ export class AuthService {
       throw new ErrorResponse("El código de verificación ha expirado", 400);
     }
 
-    const deviceInfo = await this.authRepository.getDeviceBySerie(device);
+    const deviceInfo = await this.deviceRepository.findDeviceBySerie(device);
     if (!deviceInfo) {
       throw new ErrorResponse(
         "No se encontro información del dispositivo",

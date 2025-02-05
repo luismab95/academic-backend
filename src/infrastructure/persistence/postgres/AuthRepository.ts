@@ -1,4 +1,4 @@
-import { User, Mfa, OtpType, Session, Device } from "../../../domain/entities/";
+import { User, Mfa, OtpType, Session } from "../../../domain/entities/";
 import { AuthRepository } from "../../../domain/repositories";
 import { AppDataSource } from "./DatabaseConnection";
 
@@ -6,9 +6,8 @@ export class PostgresAuthRepository implements AuthRepository {
   private userRepository = AppDataSource.getRepository(User);
   private mfaRepository = AppDataSource.getRepository(Mfa);
   private sessionRepository = AppDataSource.getRepository(Session);
-  private deviceRepository = AppDataSource.getRepository(Device);
 
-  async signIn(email: string): Promise<User | undefined> {
+  async signIn(email: string): Promise<User | null> {
     return await this.userRepository.findOne({ where: { email } });
   }
 
@@ -28,7 +27,7 @@ export class PostgresAuthRepository implements AuthRepository {
     method: OtpType,
     isUsed: boolean,
     active: boolean
-  ): Promise<Mfa | undefined> {
+  ): Promise<Mfa | null> {
     return await this.mfaRepository.findOne({
       where: { otp, userId, active, isUsed, type, method },
     });
@@ -37,7 +36,7 @@ export class PostgresAuthRepository implements AuthRepository {
   async getSessionByIdOrToken(
     id: number | null,
     token: string | null
-  ): Promise<Session | undefined> {
+  ): Promise<Session | null> {
     const whereClause = {} as Session;
     if (id !== null) {
       whereClause.id = id;
@@ -59,9 +58,5 @@ export class PostgresAuthRepository implements AuthRepository {
       session
     );
     return result.raw[0];
-  }
-
-  async getDeviceBySerie(serie: string): Promise<Device | undefined> {
-    return await this.deviceRepository.findOne({ where: { serie } });
   }
 }

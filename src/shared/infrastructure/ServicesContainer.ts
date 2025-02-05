@@ -19,6 +19,6 @@ const emailRepository = new NodemailerEmailRepository();
 
 export const ServiceContainer = {
   user: new UserService(userRepository, authRepository),
-  auth: new AuthService(authRepository, emailRepository),
+  auth: new AuthService(authRepository, emailRepository, deviceRepository),
   device: new DeviceService(deviceRepository, publicKeyRepository),
 };

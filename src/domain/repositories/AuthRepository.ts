@@ -1,7 +1,7 @@
 import { Device, Mfa, OtpType, Session, User } from "../entities";
 
 export interface AuthRepository {
-  signIn(email: string): Promise<User | undefined>;
+  signIn(email: string): Promise<User | null>;
   createMfa(mfa: Mfa): Promise<Mfa>;
   updateMfa(mfa: Mfa): Promise<Mfa>;
   getMfaByUser(
@@ -11,12 +11,11 @@ export interface AuthRepository {
     method: OtpType,
     isUsed: boolean,
     active: boolean
-  ): Promise<Mfa | undefined>;
+  ): Promise<Mfa | null>;
   createSession(session: Session): Promise<Session>;
   updateSession(session: Session): Promise<Session>;
   getSessionByIdOrToken(
     id: number | null,
     token: string | null
-  ): Promise<Session | undefined>;
-  getDeviceBySerie(serie: string): Promise<Device | undefined>;
+  ): Promise<Session | null>;
 }

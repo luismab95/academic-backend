@@ -35,7 +35,7 @@ export class PostgresPublicKeyRepository implements PublicKeyRepository {
     return result.raw;
   }
 
-  async findByDeviceId(deviceId: number): Promise<PublicKey | undefined> {
+  async findByDeviceId(deviceId: number): Promise<PublicKey | null> {
     return await this.publicKeyRepository.findOne({
       where: { deviceId, isActive: true },
     });
