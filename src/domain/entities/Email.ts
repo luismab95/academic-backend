@@ -1,0 +1,7 @@
+export class Email {
+  to: string;
+  from: string;
+  subject: string;
+  template: string;
+  data: any;
+}

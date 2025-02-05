@@ -11,6 +11,11 @@ const environment = {
   DATABASE_PASSWORD: process.env.DATABASE_PASSWORD || "",
   DATABASE_DBNAME: process.env.DATABASE_DBNAME || "",
   TZ: process.env.TZ || "America/Guayaquil",
+  MAIL_USER: process.env.MAIL_USER || "",
+  MAIL_PASSWORD: process.env.MAIL_PASSWORD || "",
+  MAIL_FROM: process.env.MAIL_FROM || "",
+  JWT_SECRET: process.env.JWT_SECRET || "",
+  CRYPTO_SECRET: process.env.CRYPTO_SECRET || "",
 };
 
 export default environment;

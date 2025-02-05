@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { encryptData } from "./EncryptHelper";
 import colors from "colors";
 
 export class ErrorResponse extends Error {
@@ -11,11 +12,15 @@ export class ErrorResponse extends Error {
   }
 }
 
-export const ResponseHelper = (_req: Request, res: Response, data: unknown) => {
-  res.json({ status: true, data });
+export const responseHelper = (req: Request, res: Response, data: unknown) => {
+  const encryptedData = encryptData(
+    data,
+    req.headers["x-public-key"] as string
+  );
+  res.json({ status: true, data: encryptedData });
 };
 
-export const ErrorHandler = (
+export const errorHandler = (
   error: any,
   _req: Request,
   res: Response,

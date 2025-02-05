@@ -1,7 +1,7 @@
 import moment from "moment-timezone";
 import environment from "../infrastructure/Environment";
 
-export const DateFormat = (
+export const dateFormat = (
   date: Date,
   format: string = "YYYY-MM-DD HH:mm:ss"
 ) => {

@@ -1,11 +1,16 @@
-import { User } from "../../domain/entities/User";
-import { UserRepository } from "../../domain/repositories/UserRepository";
-import { EncryptPassword } from "../../shared/helpers/EncryptHelper";
-import { DateFormat } from "../../shared/helpers/DateHelper";
-import { ErrorResponse } from "../../shared/helpers/ResponseHelper";
+import { OtpType, User } from "../../domain/entities";
+import { UserRepository, AuthRepository } from "../../domain/repositories";
+import {
+  encryptPassword,
+  dateFormat,
+  ErrorResponse,
+} from "../../shared/helpers";
 
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly authRepository: AuthRepository
+  ) {}
 
   async createUser(
     name: string,
@@ -14,7 +19,7 @@ export class UserService {
     password: string,
     identification: string
   ) {
-    const encrypPassword = await EncryptPassword(password);
+    const encrypPassword = await encryptPassword(password);
     const newUser = {
       name,
       lastname,
@@ -26,17 +31,53 @@ export class UserService {
     return await this.userRepository.createUser(newUser);
   }
 
-  async getUserById(id: string) {
-    const user = await this.userRepository.getUserById(id);
+  async updateUser(id: number, user: User) {
+    const userExists = await this.userRepository.getUserById(id);
+    if (!userExists) {
+      throw new ErrorResponse("Usuario no encontrado", 400);
+    }
 
+    user.id = userExists.id;
+    await this.userRepository.updateUser(user);
+  }
+
+  async updatePassword(
+    id: number,
+    password: string,
+    otp: string,
+    method: OtpType
+  ) {
+    const userExists = await this.userRepository.getUserById(id);
+    if (!userExists) {
+      throw new ErrorResponse("Usuario no encontrado", 400);
+    }
+
+    const findMfa = await this.authRepository.getMfaByUser(
+      otp,
+      userExists.id,
+      "forgot-password",
+      method,
+      true,
+      false
+    );
+    if (!findMfa) {
+      throw new ErrorResponse("Codigo de verificación incorrecto", 400);
+    }
+
+    userExists.password = await encryptPassword(password);
+    await this.userRepository.updateUser(userExists);
+  }
+
+  async getUserById(id: number) {
+    const user = await this.userRepository.getUserById(id);
     if (!user) {
       throw new ErrorResponse("Usuario no encontrado", 400);
     }
 
-    user.createdAt = DateFormat(user.createdAt as Date);
-    user.updatedAt = DateFormat(user.updatedAt as Date);
+    user.createdAt = dateFormat(user.createdAt as Date);
+    user.updatedAt = dateFormat(user.updatedAt as Date);
     delete user.password;
-    
+
     return user;
   }
 }

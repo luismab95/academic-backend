@@ -1,4 +1,10 @@
-import { User } from "../../../domain/entities/User";
+import {
+  User,
+  Mfa,
+  Device,
+  Session,
+  PublicKey,
+} from "../../../domain/entities";
 import environment from "../../../shared/infrastructure/Environment";
 import { DataSource } from "typeorm";
 
@@ -9,7 +15,7 @@ export const AppDataSource = new DataSource({
   username: environment.DATABASE_USERNAME,
   password: environment.DATABASE_PASSWORD,
   database: environment.DATABASE_DBNAME,
-  entities: [User],
+  entities: [User, Mfa, Session, Device, PublicKey],
   synchronize: true,
-  logging: true,
+  logging: false,
 });

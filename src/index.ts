@@ -1,9 +1,13 @@
 import express, { Express, Request, Response } from "express";
-import { authRoutes } from "./infrastructure/http/routes/AuthRoutes";
-import { userRoutes } from "./infrastructure/http/routes/UserRoute";
-import { ErrorHandler } from "./shared/helpers/ResponseHelper";
+import {
+  authRoutes,
+  userRoutes,
+  deviceRoutes,
+} from "./infrastructure/http/routes";
+import { errorHandler, generateKeyPairSync } from "./shared/helpers";
 import { AppDataSource } from "./infrastructure/persistence/postgres/DatabaseConnection";
 import environment from "./shared/infrastructure/Environment";
+import { DecryptDataMiddleware } from "./infrastructure/http/middlewares/CryptoMiddleware";
 import colors from "colors";
 import cors from "cors";
 
@@ -21,12 +25,16 @@ app.get(`/${routePrefix}`, (_req: Request, res: Response) => {
     data: "Welcome, but nothing to show here",
   });
 });
-app.use(`/${routePrefix}/auth`, authRoutes);
-app.use(`/${routePrefix}/user`, userRoutes);
-app.use(ErrorHandler);
+app.use(`/${routePrefix}/auth`, DecryptDataMiddleware, authRoutes);
+app.use(`/${routePrefix}/user`, DecryptDataMiddleware, userRoutes);
+app.use(`/${routePrefix}/device`, DecryptDataMiddleware, deviceRoutes);
+
+app.use(errorHandler);
 
 const startServer = async () => {
   try {
+    // generateKeyPairSync();
+
     await AppDataSource.initialize();
     console.log(colors.green.bold(`Database connected!`));
 

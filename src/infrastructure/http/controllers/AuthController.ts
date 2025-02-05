@@ -1,14 +1,13 @@
 import { NextFunction, Request, Response } from "express";
-import { ResponseHelper } from "../../../shared/helpers/ResponseHelper";
+import { responseHelper } from "../../../shared/helpers";
 import { ServiceContainer } from "../../../shared/infrastructure/ServicesContainer";
-import { SignIn, SignInMfa, SignUp } from "../../../domain/entities/Auth";
+import { SignIn, SignInMfa, SignUp } from "../../../domain/entities";
 
 export class AuthController {
   async signUp(req: Request, res: Response, next: NextFunction) {
     try {
       const { name, lastname, identification, email, password } =
         req.body as SignUp;
-
       const user = await ServiceContainer.user.createUser(
         name,
         lastname,
@@ -17,7 +16,7 @@ export class AuthController {
         identification
       );
 
-      ResponseHelper(
+      responseHelper(
         req,
         res,
         `Se registro el usuario ${user.email} correctamente`
@@ -30,10 +29,9 @@ export class AuthController {
   async signIn(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, password } = req.body as SignIn;
-
       const data = await ServiceContainer.auth.signIn(email, password);
 
-      ResponseHelper(req, res, data);
+      responseHelper(req, res, data);
     } catch (error) {
       next(error);
     }
@@ -41,11 +39,18 @@ export class AuthController {
 
   async signInMfa(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, type, otp } = req.body as SignInMfa;
+      const { email, type, otp, device } = req.body as SignInMfa;
+      const clientIp = req.headers["x-client-ip"] as string;
 
-      const data = await ServiceContainer.auth.signInMfa(email, otp, type);
+      const data = await ServiceContainer.auth.signInMfa(
+        email,
+        otp,
+        type,
+        device,
+        clientIp
+      );
 
-      ResponseHelper(req, res, data);
+      responseHelper(req, res, data);
     } catch (error) {
       next(error);
     }
@@ -54,10 +59,46 @@ export class AuthController {
   async signOut(req: Request, res: Response, next: NextFunction) {
     try {
       const { sessionId } = req.params;
-
       await ServiceContainer.auth.signOut(sessionId);
 
-      ResponseHelper(req, res, `Sesión ${sessionId} cerrada correctamente`);
+      responseHelper(req, res, `Sesión cerrada correctamente`);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async forgotPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email, method } = req.body;
+
+      const data = await ServiceContainer.auth.forgotPassword(email, method);
+
+      responseHelper(req, res, data);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async validForgotPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email, method, otp } = req.body;
+
+      const data = await ServiceContainer.auth.validForgotPassword(
+        email,
+        otp,
+        method
+      );
+
+      responseHelper(req, res, "Codigo de verificación correcto");
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getPublicKey(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await ServiceContainer.auth.getPublicKey();
+      responseHelper(req, res, data);
     } catch (error) {
       next(error);
     }

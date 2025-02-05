@@ -7,6 +7,7 @@ export class SignInMfa {
   type: OtpType;
   email: string;
   otp: string;
+  device: string;
 }
 
 export type OtpType = "email" | "sms";
