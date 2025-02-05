@@ -4,6 +4,9 @@ node_modules/
 # Distribution directory
 dist/
 
+# KEYS
+keys/
+
 # Logs
 logs/
 *.log
