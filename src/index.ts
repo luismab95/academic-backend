@@ -33,7 +33,7 @@ app.use(errorHandler);
 
 const startServer = async () => {
   try {
-    // generateKeyPairSync();
+    generateKeyPairSync();
 
     await AppDataSource.initialize();
     console.log(colors.green.bold(`Database connected!`));
