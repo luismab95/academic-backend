@@ -2,6 +2,7 @@ import { UserRepository } from "../../../domain/repositories";
 import { ErrorResponse } from "../../../shared/helpers";
 import { User } from "../../../domain/entities";
 import { AppDataSource } from "./DatabaseConnection";
+import { errorDatabase } from "../../../shared/utils/DatabaseError.util";
 import colors from "colors";
 
 export class PostgresUserRepository implements UserRepository {
@@ -14,14 +15,7 @@ export class PostgresUserRepository implements UserRepository {
       console.error(colors.red.bold(error));
 
       if (error.code === "23505") {
-        switch (true) {
-          case error.detail.includes("email"):
-            throw new ErrorResponse("Correo Electrónico ya existe", 409);
-          case error.detail.includes("identification"):
-            throw new ErrorResponse("Cédula ya existe.", 409);
-          case error.detail.includes("phone"):
-            throw new ErrorResponse("Teléfono ya existe.", 409);
-        }
+        errorDatabase(error.detail, "No se pudo crear el usuario.");
       }
 
       throw new ErrorResponse("No se pudo crear el usuario.", 400);
@@ -36,14 +30,7 @@ export class PostgresUserRepository implements UserRepository {
       console.error(colors.red.bold(error));
 
       if (error.code === "23505") {
-        switch (true) {
-          case error.detail.includes("email"):
-            throw new ErrorResponse("Correo Electrónico ya existe", 409);
-          case error.detail.includes("identification"):
-            throw new ErrorResponse("Cédula ya existe.", 409);
-          case error.detail.includes("phone"):
-            throw new ErrorResponse("Teléfono ya existe.", 409);
-        }
+        errorDatabase(error.detail, "No se pudo crear el usuario.");
       }
 
       throw new ErrorResponse("No se pudo actualizar el usuario.", 400);

@@ -1,8 +1,9 @@
-import colors from "colors";
 import { ErrorResponse } from "../../../shared/helpers";
 import { PublicKey } from "../../../domain/entities";
 import { PublicKeyRepository } from "../../../domain/repositories/PublicKeyRepository";
 import { AppDataSource } from "./DatabaseConnection";
+import { errorDatabase } from "../../../shared/utils/DatabaseError.util";
+import colors from "colors";
 
 export class PostgresPublicKeyRepository implements PublicKeyRepository {
   private readonly publicKeyRepository = AppDataSource.getRepository(PublicKey);
@@ -14,12 +15,7 @@ export class PostgresPublicKeyRepository implements PublicKeyRepository {
       console.error(colors.red.bold(error));
 
       if (error.code === "23505") {
-        switch (true) {
-          case error.detail.includes("hash"):
-            throw new ErrorResponse("Hash ya existe", 409);
-          case error.detail.includes("publicKey"):
-            throw new ErrorResponse("Clave pública ya existe.", 409);
-        }
+        errorDatabase(error.detail, "No se pudo crear la clave pública.");
       }
 
       throw new ErrorResponse("No se pudo crear la clave pública.", 400);

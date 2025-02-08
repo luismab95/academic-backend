@@ -1,34 +1,8 @@
 import { body, header, param } from "express-validator";
+import { commonUserValidator } from "./UserValidator";
 
 export const SignUpValidator = [
-  body("name")
-    .isString()
-    .withMessage("Nombres debe ser un texto")
-    .notEmpty({ ignore_whitespace: true })
-    .withMessage("Nombres es requerido")
-    .isLength({ max: 100 })
-    .withMessage("Nombres debe tener un máximo de 100 caracteres"),
-  body("lastname")
-    .isString()
-    .withMessage("Apellidos debe ser un texto")
-    .notEmpty({ ignore_whitespace: true })
-    .withMessage("Apellidos es requerido")
-    .isLength({ max: 100 })
-    .withMessage("Apellidos debe tener un máximo de 100 caracteres"),
-  body("identification")
-    .isString()
-    .withMessage("Cédula debe ser un texto numérico")
-    .notEmpty({ ignore_whitespace: true })
-    .withMessage("Cédula es requerido")
-    .isLength({ min: 10, max: 10 })
-    .withMessage("Cédula debe tener 10 caracteres"),
-  body("email")
-    .isEmail()
-    .withMessage("Correo Electrónico no válido")
-    .notEmpty({ ignore_whitespace: true })
-    .withMessage("Correo Electrónico es requerido")
-    .isLength({ max: 100 })
-    .withMessage("Correo Electrónico debe tener un máximo de 100 caracteres"),
+  ...commonUserValidator,
   body("password")
     .isString()
     .withMessage("Contraseña debe ser un texto")
