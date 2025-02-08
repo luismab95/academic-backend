@@ -76,6 +76,7 @@ The compiled JavaScript files will be in the `dist` directory.
 │   ├── shared
 │   └── index.ts
 ├── test
+├── templates
 ├── dist
 ├── package.json
 ├── tsconfig.json
@@ -98,6 +99,7 @@ The compiled JavaScript files will be in the `dist` directory.
 - `src/shared`: Shared utilities and helpers.
 - `src/index.ts`: Application entry point.
 - `test`: Unit and integration tests.
+- `templates`: Folder for emails templates.
 - `dist`: Compiled files.
 - `package.json`: npm configuration file.
 - `tsconfig.json`: TypeScript configuration.
