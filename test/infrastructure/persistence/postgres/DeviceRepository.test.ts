@@ -9,6 +9,18 @@ jest.mock(
 );
 jest.mock("../../../../src/shared/helpers");
 
+const mockDevice = { id: 1, serie: "12345" } as Device;
+const createRepositoryMock = () => ({
+  save: jest.fn().mockResolvedValue(mockDevice),
+});
+const mockTransaction = async (callback) => {
+  const repositoryMock = createRepositoryMock();
+  const context = {
+    getRepository: () => repositoryMock,
+  };
+  return await callback(context);
+};
+
 describe("PostgreDeviceRepository", () => {
   let deviceRepository: PostgreDeviceRepository;
   let mockRepository: jest.Mocked<Repository<Device>>;
@@ -28,24 +40,8 @@ describe("PostgreDeviceRepository", () => {
 
   describe("createDevice", () => {
     it("should create a new device and public key", async () => {
-      const mockDevice = { id: 1, serie: "12345" } as Device;
       const mockPublicKey = "publicKey";
       const mockHash = "hashedPublicKey";
-
-      const createRepositoryMock = () => ({
-        save: jest.fn().mockResolvedValue(mockDevice),
-      });
-
-      // Define the transaction mock function
-      const mockTransaction = async (callback) => {
-        const repositoryMock = createRepositoryMock();
-
-        const context = {
-          getRepository: () => repositoryMock,
-        };
-
-        return await callback(context);
-      };
 
       (generateSHA256Hash as jest.Mock).mockReturnValue(mockHash);
 
