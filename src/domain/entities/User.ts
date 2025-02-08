@@ -8,7 +8,6 @@ import {
 } from "typeorm";
 import { Mfa } from "./Mfa";
 import { Session } from "./Session";
-import { Device } from "./Device";
 
 @Entity()
 export class User {

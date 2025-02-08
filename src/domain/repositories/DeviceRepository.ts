@@ -1,4 +1,3 @@
-import { EntityManager } from "typeorm";
 import { Device } from "../entities";
 
 export interface DeviceRepository {

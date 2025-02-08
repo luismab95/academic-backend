@@ -5,6 +5,7 @@ dotenv.config();
 const environment = {
   HOST: process.env.HOST || "localhost",
   PORT: Number(process.env.PORT || 3000),
+  NODE_ENV: process.env.NODE_ENV || "development",
   DATABASE_HOST: process.env.DATABASE_HOST || "",
   DATABASE_PORT: Number(process.env.DATABASE_PORT || "5432"),
   DATABASE_USERNAME: process.env.DATABASE_USERNAME || "",

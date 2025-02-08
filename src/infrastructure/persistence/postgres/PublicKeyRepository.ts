@@ -5,7 +5,7 @@ import { PublicKeyRepository } from "../../../domain/repositories/PublicKeyRepos
 import { AppDataSource } from "./DatabaseConnection";
 
 export class PostgresPublicKeyRepository implements PublicKeyRepository {
-  private publicKeyRepository = AppDataSource.getRepository(PublicKey);
+  private readonly publicKeyRepository = AppDataSource.getRepository(PublicKey);
 
   async createPublicKey(publicKey: PublicKey): Promise<PublicKey> {
     try {

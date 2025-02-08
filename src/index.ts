@@ -15,9 +15,13 @@ const app: Express = express();
 const host = environment.HOST;
 const port = environment.PORT;
 const routePrefix = "api";
+const corsOptions = {
+  origin: "",
+};
 
+app.disable("x-powered-by");
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 
 app.get(`/${routePrefix}`, (_req: Request, res: Response) => {
   res.status(200).json({

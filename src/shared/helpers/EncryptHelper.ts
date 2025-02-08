@@ -1,6 +1,5 @@
-import { createHash } from "crypto";
+import crypto, { createHash } from "crypto";
 import bcrypt from "bcrypt";
-import crypto from "crypto";
 import colors from "colors";
 import fs from "fs";
 import path from "path";
@@ -23,7 +22,7 @@ export const generateSHA256Hash = (text: string) => {
 };
 
 export const validHash = (text: string, hash: string) => {
-  const newHash = generateSHA256Hash(text);  
+  const newHash = generateSHA256Hash(text);
   return newHash === hash;
 };
 

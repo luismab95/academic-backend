@@ -9,7 +9,7 @@ import { EmailRepository } from "../../../domain/repositories";
 import { ErrorResponse } from "../../../shared/helpers";
 
 export class NodemailerEmailRepository implements EmailRepository {
-  private transporter: nodemailer.Transporter<
+  private readonly transporter: nodemailer.Transporter<
     SMTPTransport.SentMessageInfo,
     SMTPTransport.Options
   >;
@@ -17,6 +17,9 @@ export class NodemailerEmailRepository implements EmailRepository {
   constructor() {
     this.transporter = nodemailer.createTransport({
       service: "gmail",
+      secure: environment.NODE_ENV === 'production',
+      requireTLS: environment.NODE_ENV === 'production',
+      port: 465,
       auth: {
         user: environment.MAIL_USER,
         pass: environment.MAIL_PASSWORD,

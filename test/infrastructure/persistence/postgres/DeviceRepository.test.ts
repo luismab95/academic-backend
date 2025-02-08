@@ -32,16 +32,25 @@ describe("PostgreDeviceRepository", () => {
       const mockPublicKey = "publicKey";
       const mockHash = "hashedPublicKey";
 
+      const createRepositoryMock = () => ({
+        save: jest.fn().mockResolvedValue(mockDevice),
+      });
+
+      // Define the transaction mock function
+      const mockTransaction = async (callback) => {
+        const repositoryMock = createRepositoryMock();
+
+        const context = {
+          getRepository: () => repositoryMock,
+        };
+
+        return await callback(context);
+      };
+
       (generateSHA256Hash as jest.Mock).mockReturnValue(mockHash);
 
       (AppDataSource.transaction as jest.Mock).mockImplementation(
-        async (callback) => {
-          return await callback({
-            getRepository: () => ({
-              save: jest.fn().mockResolvedValue(mockDevice),
-            }),
-          });
-        }
+        mockTransaction
       );
 
       const result = await deviceRepository.createDevice(

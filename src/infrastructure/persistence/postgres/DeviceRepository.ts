@@ -4,7 +4,7 @@ import { DeviceRepository } from "../../../domain/repositories";
 import { AppDataSource } from "./DatabaseConnection";
 
 export class PostgreDeviceRepository implements DeviceRepository {
-  private deviceRepository = AppDataSource.getRepository(Device);
+  private readonly deviceRepository = AppDataSource.getRepository(Device);
 
   async createDevice(device: Device, publicKey: string): Promise<Device> {
     return await AppDataSource.transaction(async (cnx) => {

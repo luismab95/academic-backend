@@ -83,11 +83,7 @@ export class AuthController {
     try {
       const { email, method, otp } = req.body;
 
-      const data = await ServiceContainer.auth.validForgotPassword(
-        email,
-        otp,
-        method
-      );
+      await ServiceContainer.auth.validForgotPassword(email, otp, method);
 
       responseHelper(req, res, "Codigo de verificación correcto");
     } catch (error) {

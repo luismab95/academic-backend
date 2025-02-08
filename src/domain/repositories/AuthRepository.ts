@@ -1,4 +1,4 @@
-import { Device, Mfa, OtpType, Session, User } from "../entities";
+import { Mfa, OtpType, Session, User } from "../entities";
 
 export interface AuthRepository {
   signIn(email: string): Promise<User | null>;

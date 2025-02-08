@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { ValidationChain } from "express-validator";
+import { ValidationChain, body } from "express-validator";
 import { ErrorResponse } from "../../../../src/shared/helpers";
 import { ValidationMiddleware } from "../../../../src/infrastructure/http/middlewares/ExpressValidatorMiddleware";
-import { body } from "express-validator";
 
 describe("ExpressValidatorMiddleware", () => {
   let req: Partial<Request>;

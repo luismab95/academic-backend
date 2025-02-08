@@ -2,8 +2,12 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "index.js",
-  "author": "Luis <luxo93996@gmail.com>",
+  "author": "Luis <luismab95@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/luismab95/tesis-backend.git"
+  },
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/index.js",

@@ -1,4 +1,4 @@
-import { body, checkSchema } from "express-validator";
+import { body } from "express-validator";
 
 export const CreateDeviceValidator = [
   body("device.name")

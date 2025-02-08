@@ -10,10 +10,7 @@ export class UserController {
 
       const user = await ServiceContainer.user.getUserById(Number(userId));
 
-      responseHelper(req, res, {
-        email: "luismab95@gmail.com",
-        password: "Luis1995@",
-      });
+      responseHelper(req, res, user);
     } catch (error) {
       next(error);
     }

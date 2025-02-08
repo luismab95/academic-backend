@@ -9,10 +9,9 @@ export const VerifyTokenMiddleware = async (
   next: NextFunction
 ) => {
   const authHeader = req.headers.authorization;
-  const token =
-    authHeader && authHeader.startsWith("Bearer ")
-      ? authHeader.split(" ")[1]
-      : null;
+  const token = authHeader?.startsWith("Bearer ")
+    ? authHeader.split(" ")[1]
+    : null;
 
   if (token === null) {
     return next(faliedToken(""));

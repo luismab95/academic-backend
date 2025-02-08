@@ -5,7 +5,7 @@ import { AppDataSource } from "./DatabaseConnection";
 import colors from "colors";
 
 export class PostgresUserRepository implements UserRepository {
-  private userRepository = AppDataSource.getRepository(User);
+  private readonly userRepository = AppDataSource.getRepository(User);
 
   async createUser(user: User): Promise<User> {
     try {

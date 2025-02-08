@@ -3,9 +3,9 @@ import { AuthRepository } from "../../../domain/repositories";
 import { AppDataSource } from "./DatabaseConnection";
 
 export class PostgresAuthRepository implements AuthRepository {
-  private userRepository = AppDataSource.getRepository(User);
-  private mfaRepository = AppDataSource.getRepository(Mfa);
-  private sessionRepository = AppDataSource.getRepository(Session);
+  private readonly userRepository = AppDataSource.getRepository(User);
+  private readonly mfaRepository = AppDataSource.getRepository(Mfa);
+  private readonly sessionRepository = AppDataSource.getRepository(Session);
 
   async signIn(email: string): Promise<User | null> {
     return await this.userRepository.findOne({ where: { email } });

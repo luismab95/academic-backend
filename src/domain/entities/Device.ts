@@ -2,13 +2,10 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
-  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Session } from "./Session";
-import { User } from "./User";
 import { PublicKey } from "./PublicKey";
 
 @Entity({ schema: "security" })
