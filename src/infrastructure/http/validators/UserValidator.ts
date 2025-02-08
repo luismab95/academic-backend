@@ -1,11 +1,6 @@
 import { body, param } from "express-validator";
 
-export const UpdateUserValidator = [
-  param("userId")
-    .isNumeric()
-    .withMessage("Id de usuario no válido")
-    .notEmpty({ ignore_whitespace: true })
-    .withMessage("Id de usuario es requerido"),
+export const commonUserValidator = [
   body("name")
     .isString()
     .withMessage("Nombres debe ser un texto")
@@ -34,6 +29,14 @@ export const UpdateUserValidator = [
     .withMessage("Correo Electrónico es requerido")
     .isLength({ max: 100 })
     .withMessage("Correo Electrónico debe tener un máximo de 100 caracteres"),
+];
+
+export const UpdateUserValidator = [
+  param("userId")
+    .isNumeric()
+    .withMessage("Id de usuario no válido")
+    .notEmpty({ ignore_whitespace: true })
+    .withMessage("Id de usuario es requerido"),
   body("phone")
     .isString()
     .withMessage("Teléfono debe ser un texto numérico")
@@ -41,6 +44,7 @@ export const UpdateUserValidator = [
     .withMessage("Teléfono es requerido")
     .isLength({ max: 20 })
     .withMessage("Teléfono debe tener un máximo de 20 caracteres"),
+  ...commonUserValidator,
 ];
 
 export const GetUserByIdValidator = [

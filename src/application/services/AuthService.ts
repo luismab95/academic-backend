@@ -8,14 +8,18 @@ import {
   generateSHA256Hash,
   generateToken,
 } from "../../shared/helpers/";
-import { AuthRepository, DeviceRepository, EmailRepository } from "../../domain/repositories";
+import {
+  AuthRepository,
+  DeviceRepository,
+  EmailRepository,
+} from "../../domain/repositories";
 import { Email, Mfa, OtpType, Session } from "../../domain/entities";
 
 export class AuthService {
   constructor(
     private readonly authRepository: AuthRepository,
     private readonly emailRepository: EmailRepository,
-    private readonly deviceRepository: DeviceRepository,
+    private readonly deviceRepository: DeviceRepository
   ) {}
 
   async signIn(email: string, password: string) {
@@ -61,28 +65,12 @@ export class AuthService {
     device: string,
     clientIp: string
   ) {
-    const user = await this.authRepository.signIn(email);
-    if (!user) {
-      throw new ErrorResponse("Usuario no encontrado", 400);
-    }
-
-    const findMfa = await this.authRepository.getMfaByUser(
+    const { user, findMfa } = await this.validUserAndMfa(
+      email,
       otp,
-      user.id,
-      "login",
       method,
-      false,
-      true
+      "login"
     );
-    if (!findMfa) {
-      throw new ErrorResponse("Código de verificación incorrecto", 400);
-    }
-
-    if (new Date() > findMfa.expiratedAt) {
-      const updateMfa = { id: findMfa.id, active: false } as Mfa;
-      await this.authRepository.updateMfa(updateMfa);
-      throw new ErrorResponse("El código de verificación ha expirado", 400);
-    }
 
     const deviceInfo = await this.deviceRepository.findDeviceBySerie(device);
     if (!deviceInfo) {
@@ -171,6 +159,38 @@ export class AuthService {
   }
 
   async validForgotPassword(email: string, otp: string, method: OtpType) {
+    const { findMfa } = await this.validUserAndMfa(
+      email,
+      otp,
+      method,
+      "forgot-password"
+    );
+
+    const updateMfa = {
+      id: findMfa.id,
+      active: false,
+      isUsed: true,
+    } as Mfa;
+    await this.authRepository.updateMfa(updateMfa);
+  }
+
+  async getPublicKey() {
+    const publicKey: string = fs.readFileSync(
+      `${path.join(process.cwd(), "/keys/publicKey.pem")}`,
+      "utf8"
+    );
+    return {
+      publicKey,
+      sha256Hash: generateSHA256Hash(publicKey),
+    };
+  }
+
+  private async validUserAndMfa(
+    email: string,
+    otp: string,
+    method: OtpType,
+    type: "login" | "forgot-password"
+  ) {
     const user = await this.authRepository.signIn(email);
     if (!user) {
       throw new ErrorResponse("Usuario no encontrado", 400);
@@ -179,7 +199,7 @@ export class AuthService {
     const findMfa = await this.authRepository.getMfaByUser(
       otp,
       user.id,
-      "forgot-password",
+      type,
       method,
       false,
       true
@@ -194,18 +214,6 @@ export class AuthService {
       throw new ErrorResponse("El código de verificación ha expirado", 400);
     }
 
-    const updateMfa = { id: findMfa.id, active: false, isUsed: true } as Mfa;
-    await this.authRepository.updateMfa(updateMfa);
-  }
-
-  async getPublicKey() {
-    const publicKey: string = fs.readFileSync(
-      `${path.join(process.cwd(), "/keys/publicKey.pem")}`,
-      "utf8"
-    );
-    return {
-      publicKey,
-      sha256Hash: generateSHA256Hash(publicKey),
-    };
+    return { user, findMfa };
   }
 }

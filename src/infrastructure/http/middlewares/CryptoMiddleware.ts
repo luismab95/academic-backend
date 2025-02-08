@@ -40,7 +40,6 @@ export const DecryptDataMiddleware = async (
     req.headers["x-public-key"] = publicKeyInfo.publicKey;
 
     const { data } = req.body;
-    console.log(data);
 
     if (data !== undefined) {
       req.body = decryptData(req.body.data);
@@ -49,7 +48,7 @@ export const DecryptDataMiddleware = async (
     return next();
   } catch (error) {
     console.log(error);
-    
+
     return next(faliedMiddleware("Error al decifrar la información"));
   }
 };
