@@ -1,4 +1,4 @@
-import { User, Mfa, OtpType, Session } from "../../../domain/entities/";
+import { User, Mfa, OtpType, Session, otpTypeAction } from "../../../domain/entities/";
 import { AuthRepository } from "../../../domain/repositories";
 import { AppDataSource } from "./DatabaseConnection";
 
@@ -23,7 +23,7 @@ export class PostgresAuthRepository implements AuthRepository {
   async getMfaByUser(
     otp: string,
     userId: number,
-    type: "login" | "forgot-password",
+    type: otpTypeAction,
     method: OtpType,
     isUsed: boolean,
     active: boolean

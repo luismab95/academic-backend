@@ -71,26 +71,51 @@ export const SignOutValidator = [
 ];
 
 export const ForgotPasswordValidator = [
-  body("email")
-    .isEmail()
-    .withMessage("Correo Electrónico no válido")
+  body("contact")
+    .custom((value) => {
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      const isPhoneNumber = /^\+?[1-9]\d{1,14}$/.test(value);
+      if (!isEmail && !isPhoneNumber) {
+        throw new Error(
+          "Debe ser un correo electrónico válido o un número de celular válido"
+        );
+      }
+      return true;
+    })
     .notEmpty({ ignore_whitespace: true })
-    .withMessage("Correo Electrónico es requerido"),
+    .withMessage("Contacto es requerido"),
   body("method")
     .isString()
     .withMessage("Método no válido")
     .notEmpty({ ignore_whitespace: true })
-    .withMessage("Método es requerida")
+    .withMessage("Método es requerido")
     .isIn(["sms", "email"])
     .withMessage("Método debe ser 'sms' o 'email'"),
+  body("type")
+    .isString()
+    .withMessage("Tipo no válido")
+    .notEmpty({ ignore_whitespace: true })
+    .withMessage("Tipo es requerido")
+    .isIn(["login", "reset-password", "forgot-password"])
+    .withMessage(
+      "Tipo debe ser 'login' o 'reset-password' o 'forgot-password'"
+    ),
 ];
 
 export const ValidForgotPasswordValidator = [
-  body("email")
-    .isEmail()
-    .withMessage("Correo Electrónico no válido")
+  body("contact")
+    .custom((value) => {
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      const isPhoneNumber = /^\+?[1-9]\d{1,14}$/.test(value);
+      if (!isEmail && !isPhoneNumber) {
+        throw new Error(
+          "Debe ser un correo electrónico válido o un número de celular válido"
+        );
+      }
+      return true;
+    })
     .notEmpty({ ignore_whitespace: true })
-    .withMessage("Correo Electrónico es requerido"),
+    .withMessage("Contacto es requerido"),
   body("method")
     .isString()
     .withMessage("Método no válido")
@@ -105,4 +130,13 @@ export const ValidForgotPasswordValidator = [
     .withMessage("Código de verificación es requerido")
     .isLength({ min: 4, max: 4 })
     .withMessage("Código de verificación debe tener 4 caracteres"),
+  body("type")
+    .isString()
+    .withMessage("Tipo no válido")
+    .notEmpty({ ignore_whitespace: true })
+    .withMessage("Tipo es requerido")
+    .isIn(["login", "reset-password", "forgot-password"])
+    .withMessage(
+      "Tipo debe ser 'login' o 'reset-password' o 'forgot-password'"
+    ),
 ];

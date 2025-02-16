@@ -32,12 +32,13 @@ export class UserController {
   async updatePassword(req: Request, res: Response, next: NextFunction) {
     try {
       const { userId } = req.params;
-      const { password, otp, method } = req.body;
+      const { password, otp, method, type } = req.body;
       await ServiceContainer.user.updatePassword(
         Number(userId),
         password,
         otp,
-        method
+        method,
+        type
       );
 
       responseHelper(req, res, "Contraseña actualizada correctamente");

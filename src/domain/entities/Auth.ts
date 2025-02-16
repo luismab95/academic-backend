@@ -4,13 +4,14 @@ export class SignIn {
 }
 
 export class SignInMfa {
-  type: OtpType;
+  method: OtpType;
   email: string;
   otp: string;
   device: string;
 }
 
 export type OtpType = "email" | "sms";
+export type otpTypeAction = "login" | "reset-password" | "forgot-password";
 
 export class SignUp {
   name: string;
@@ -19,4 +20,3 @@ export class SignUp {
   email: string;
   password: string;
 }
-

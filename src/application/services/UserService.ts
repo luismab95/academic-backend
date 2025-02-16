@@ -1,4 +1,4 @@
-import { OtpType, User } from "../../domain/entities";
+import { OtpType, otpTypeAction, User } from "../../domain/entities";
 import { UserRepository, AuthRepository } from "../../domain/repositories";
 import {
   encryptPassword,
@@ -33,7 +33,7 @@ export class UserService {
 
   async updateUser(id: number, user: User) {
     const userExists = await this.userRepository.getUserById(id);
-    
+
     if (!userExists) {
       throw new ErrorResponse("Usuario no encontrado", 400);
     }
@@ -46,7 +46,8 @@ export class UserService {
     userId: number,
     password: string,
     otp: string,
-    method: OtpType
+    method: OtpType,
+    type: otpTypeAction
   ) {
     const userExists = await this.userRepository.getUserById(userId);
     if (!userExists) {
@@ -56,7 +57,7 @@ export class UserService {
     const findMfa = await this.authRepository.getMfaByUser(
       otp,
       userExists.id,
-      "forgot-password",
+      type,
       method,
       true,
       false

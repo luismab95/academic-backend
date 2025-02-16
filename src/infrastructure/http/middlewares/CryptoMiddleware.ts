@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { decryptData, ErrorResponse, validHash } from "../../../shared/helpers";
+import environment from "../../../shared/infrastructure/Environment";
 import {
   PostgreDeviceRepository,
   PostgresPublicKeyRepository,
@@ -11,6 +12,10 @@ export const DecryptDataMiddleware = async (
   next: NextFunction
 ) => {
   try {
+    if (!environment.ENABLE_CRYPT_E2E) {
+      return next();
+    }
+
     const deviceSerie = req.headers["x-device-serie"] as string;
     if (!deviceSerie) {
       return next(
@@ -48,7 +53,6 @@ export const DecryptDataMiddleware = async (
     return next();
   } catch (error) {
     console.log(error);
-
     return next(faliedMiddleware("Error al decifrar la información"));
   }
 };

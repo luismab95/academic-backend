@@ -44,7 +44,7 @@ describe("DeviceService", () => {
   });
 
   it("should create a new device", async () => {
-    deviceRepository.findDeviceBySerie.mockResolvedValue(undefined);
+    deviceRepository.findDeviceBySerie.mockResolvedValue(null);
 
     await deviceService.createDevice(device, publicKey);
 
@@ -74,5 +74,25 @@ describe("DeviceService", () => {
     expect(publicKeyRepository.createPublicKey).toHaveBeenCalledWith(
       newPublicKey
     );
+  });
+
+  it("should get a device by serie", async () => {
+    deviceRepository.findDeviceBySerie.mockResolvedValue(device);
+
+    const result = await deviceService.getDeviceBySerie(device.serie);
+
+    expect(result).toBe(device);
+    expect(deviceRepository.findDeviceBySerie).toHaveBeenCalledWith(
+      device.serie
+    );
+  });
+
+  it("should get a message of device not found", async () => {
+    deviceRepository.findDeviceBySerie.mockResolvedValue(null);
+
+    const result = await deviceService.getDeviceBySerie(device.serie);
+
+    expect(result).toBe("Dispositivo no encontrado");
+    expect(deviceRepository.findDeviceBySerie).toHaveBeenCalledTimes(1);
   });
 });

@@ -39,13 +39,13 @@ export class AuthController {
 
   async signInMfa(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, type, otp, device } = req.body as SignInMfa;
+      const { email, method, otp, device } = req.body as SignInMfa;
       const clientIp = req.headers["x-client-ip"] as string;
 
       const data = await ServiceContainer.auth.signInMfa(
         email,
         otp,
-        type,
+        method,
         device,
         clientIp
       );
@@ -69,9 +69,13 @@ export class AuthController {
 
   async forgotPassword(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, method } = req.body;
+      const { contact, method, type } = req.body;
 
-      const data = await ServiceContainer.auth.forgotPassword(email, method);
+      const data = await ServiceContainer.auth.forgotPassword(
+        contact,
+        method,
+        type
+      );
 
       responseHelper(req, res, data);
     } catch (error) {
@@ -81,11 +85,19 @@ export class AuthController {
 
   async validForgotPassword(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, method, otp } = req.body;
+      const { contact, method, otp, type } = req.body;
 
-      await ServiceContainer.auth.validForgotPassword(email, otp, method);
+      const userId = await ServiceContainer.auth.validForgotPassword(
+        contact,
+        otp,
+        method,
+        type
+      );
 
-      responseHelper(req, res, "Codigo de verificación correcto");
+      responseHelper(req, res, {
+        userId,
+        message: "Codigo de verificación correcto",
+      });
     } catch (error) {
       next(error);
     }

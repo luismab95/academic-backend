@@ -116,7 +116,13 @@ describe("UserService", () => {
     authRepository.getMfaByUser.mockResolvedValue(mfa);
     (encryptPassword as jest.Mock).mockResolvedValue("encryptedPassword");
 
-    await userService.updatePassword(user.id, "123456", "aD4w", "email");
+    await userService.updatePassword(
+      user.id,
+      "123456",
+      "aD4w",
+      "email",
+      "forgot-password"
+    );
 
     expect(userRepository.getUserById).toHaveBeenCalledWith(user.id);
     expect(authRepository.getMfaByUser).toHaveBeenCalledWith(

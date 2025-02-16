@@ -1,15 +1,21 @@
 import { NextFunction, Request, Response } from "express";
 import colors from "colors";
-import { ErrorResponse, verifyToken } from "../../../shared/helpers";
+import {
+  decodeToken,
+  ErrorResponse,
+  refreshToken,
+  verifyToken,
+} from "../../../shared/helpers";
 import { PostgresAuthRepository } from "../../../infrastructure/persistence/postgres";
+import { JwtPayload } from "jsonwebtoken";
 
 export const VerifyTokenMiddleware = async (
   req: Request,
-  _res: Response,
+  res: Response,
   next: NextFunction
 ) => {
   const authHeader = req.headers.authorization;
-  const token = authHeader?.startsWith("Bearer ")
+  let token = authHeader?.startsWith("Bearer ")
     ? authHeader.split(" ")[1]
     : null;
 
@@ -18,6 +24,15 @@ export const VerifyTokenMiddleware = async (
   }
 
   try {
+    const payload = decodeToken(token) as JwtPayload;
+
+    if (payload.exp && Date.now() >= payload.exp * 1000) {
+      token = await refreshToken(payload.sessionId);
+      console.log(token);
+
+      res.setHeader("REFRESH_TOKEN", token);
+    }
+
     verifyToken(token);
     const session = await new PostgresAuthRepository().getSessionByIdOrToken(
       null,

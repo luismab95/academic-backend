@@ -7,19 +7,29 @@ import {
   generateRandomString,
   generateSHA256Hash,
   generateToken,
+  maskEmail,
+  maskString,
 } from "../../shared/helpers/";
 import {
   AuthRepository,
   DeviceRepository,
   EmailRepository,
+  UserRepository,
 } from "../../domain/repositories";
-import { Email, Mfa, OtpType, Session } from "../../domain/entities";
+import {
+  Email,
+  Mfa,
+  OtpType,
+  otpTypeAction,
+  Session,
+} from "../../domain/entities";
 
 export class AuthService {
   constructor(
     private readonly authRepository: AuthRepository,
     private readonly emailRepository: EmailRepository,
-    private readonly deviceRepository: DeviceRepository
+    private readonly deviceRepository: DeviceRepository,
+    private readonly userRepository: UserRepository
   ) {}
 
   async signIn(email: string, password: string) {
@@ -55,7 +65,9 @@ export class AuthService {
       template: "mfa",
     } as Email);
 
-    return `Se ha enviado un código de verificación al correo ${user.email}`;
+    const maskEmailResponse = maskEmail(user.email);
+
+    return `Se ha enviado un código de verificación al correo ${maskEmailResponse}`;
   }
 
   async signInMfa(
@@ -82,16 +94,33 @@ export class AuthService {
 
     const newSession = {
       userId: user.id,
-      accessToken: generateToken({ userId: user.id, email: user.email }, "1h"),
-      refreshToken: generateToken(
-        { userId: user.id, email: user.email },
-        "30d"
-      ),
+      accessToken: generateRandomString(8),
+      refreshToken: generateRandomString(8),
       deviceId: deviceInfo.id,
       originIp: clientIp,
-      expiratedAt: new Date(Date.now() + 24 * 60 * 60000),
+      expiratedAt: new Date(Date.now() + 30 * 24 * 60 * 60000),
     } as Session;
     const createSession = await this.authRepository.createSession(newSession);
+
+    createSession.accessToken = generateToken(
+      {
+        sessionId: createSession.id,
+        userId: user.id,
+        email: user.email,
+        fullname: `${user.name} ${user.lastname}`,
+      },
+      "1d"
+    );
+    createSession.refreshToken = generateToken(
+      {
+        sessionId: createSession.id,
+        userId: user.id,
+        email: user.email,
+        fullname: `${user.name} ${user.lastname}`,
+      },
+      "30d"
+    );
+    await this.authRepository.updateSession(createSession);
 
     const updateMfa = { id: findMfa.id, isUsed: true, active: false } as Mfa;
     await this.authRepository.updateMfa(updateMfa);
@@ -118,15 +147,17 @@ export class AuthService {
     await this.authRepository.updateSession(updateSession);
   }
 
-  async forgotPassword(email: string, method: OtpType) {
-    const user = await this.authRepository.signIn(email);
+  async forgotPassword(contact: string, method: OtpType, type: otpTypeAction) {
+    const email = method === "email" ? contact : null;
+    const phone = method === "sms" ? contact : null;
+    const user = await this.userRepository.findUserByEmailOrPhone(email, phone);
     if (!user) {
       throw new ErrorResponse("Usuario no encontrado", 400);
     }
 
     const newMfa = {
       userId: user.id,
-      type: "forgot-password",
+      type,
       otp: generateRandomString(4),
       method,
       expiratedAt: new Date(Date.now() + 5 * 60000),
@@ -136,7 +167,8 @@ export class AuthService {
     let response: string = "Se ha enviado un código de verificación al";
     switch (method) {
       case "sms":
-        response = `${response} telefono ${user.phone}`;
+        //TODO AGREGAR SERVICIO DE SMS
+        response = `${response} telefono ${maskString(user.phone)}`;
         break;
       case "email":
         await this.emailRepository.sendEmail({
@@ -151,19 +183,24 @@ export class AuthService {
           to: user.email,
           template: "mfa",
         } as Email);
-        response = `${response} correo ${user.email}`;
+        response = `${response} correo ${maskEmail(user.email)}`;
         break;
     }
 
     return response;
   }
 
-  async validForgotPassword(email: string, otp: string, method: OtpType) {
-    const { findMfa } = await this.validUserAndMfa(
-      email,
+  async validForgotPassword(
+    contact: string,
+    otp: string,
+    method: OtpType,
+    type: otpTypeAction
+  ) {
+    const { findMfa, user } = await this.validUserAndMfa(
+      contact,
       otp,
       method,
-      "forgot-password"
+      type
     );
 
     const updateMfa = {
@@ -172,6 +209,8 @@ export class AuthService {
       isUsed: true,
     } as Mfa;
     await this.authRepository.updateMfa(updateMfa);
+
+    return user.id;
   }
 
   async getPublicKey() {
@@ -186,12 +225,14 @@ export class AuthService {
   }
 
   private async validUserAndMfa(
-    email: string,
+    contact: string,
     otp: string,
     method: OtpType,
-    type: "login" | "forgot-password"
+    type: otpTypeAction
   ) {
-    const user = await this.authRepository.signIn(email);
+    const email = method === "email" ? contact : null;
+    const phone = method === "sms" ? contact : null;
+    const user = await this.userRepository.findUserByEmailOrPhone(email, phone);
     if (!user) {
       throw new ErrorResponse("Usuario no encontrado", 400);
     }

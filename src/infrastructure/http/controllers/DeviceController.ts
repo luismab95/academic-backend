@@ -14,4 +14,16 @@ export class DeviceController {
       next(error);
     }
   }
+
+  async getDeviceBySerie(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { serie } = req.params;
+
+      const device = await ServiceContainer.device.getDeviceBySerie(serie);
+
+      responseHelper(req, res, device);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

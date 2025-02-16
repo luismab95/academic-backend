@@ -1,4 +1,4 @@
-import { body } from "express-validator";
+import { body, param } from "express-validator";
 
 export const CreateDeviceValidator = [
   body("device.name")
@@ -11,8 +11,6 @@ export const CreateDeviceValidator = [
   body("device.type")
     .isString()
     .withMessage("El tipo debe ser un texto.")
-    .isLength({ max: 50 })
-    .withMessage("El tipo debe tener un máximo de 50 caracteres.")
     .optional(),
   body("device.serie")
     .isString()
@@ -36,8 +34,16 @@ export const CreateDeviceValidator = [
   body("publicKey")
     .isString()
     .withMessage("La clave pública debe ser un texto.")
-    .matches(/-----BEGIN PUBLIC KEY-----[\s\S]+-----END PUBLIC KEY-----/)
+    .matches(/-----BEGIN RSA PUBLIC KEY-----[\s\S]+-----END RSA PUBLIC KEY-----/)
     .withMessage("La clave pública no es válida.")
     .notEmpty({ ignore_whitespace: true })
     .withMessage("La clave pública es requerida."),
+];
+
+export const GetDeviceBySerieValidator = [
+  param("serie")
+    .isString()
+    .withMessage("La serie debe ser un texto.")
+    .notEmpty({ ignore_whitespace: true })
+    .withMessage("La serie es requerida."),
 ];

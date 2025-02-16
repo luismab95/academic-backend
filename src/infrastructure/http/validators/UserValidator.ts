@@ -88,4 +88,13 @@ export const UpdateUserPasswordValidator = [
     .withMessage("Código de verificación es requerido")
     .isLength({ min: 4, max: 4 })
     .withMessage("Código de verificación debe tener 4 caracteres"),
+  body("type")
+    .isString()
+    .withMessage("Tipo no válido")
+    .notEmpty({ ignore_whitespace: true })
+    .withMessage("Tipo es requerido")
+    .isIn(["login", "reset-password", "forgot-password"])
+    .withMessage(
+      "Tipo debe ser 'login' o 'reset-password' o 'forgot-password'"
+    ),
 ];

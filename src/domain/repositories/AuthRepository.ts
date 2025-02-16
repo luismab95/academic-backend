@@ -1,4 +1,4 @@
-import { Mfa, OtpType, Session, User } from "../entities";
+import { Mfa, OtpType, otpTypeAction, Session, User } from "../entities";
 
 export interface AuthRepository {
   signIn(email: string): Promise<User | null>;
@@ -7,7 +7,7 @@ export interface AuthRepository {
   getMfaByUser(
     otp: string,
     userId: number,
-    type: "login" | "forgot-password",
+    type: otpTypeAction,
     method: OtpType,
     isUsed: boolean,
     active: boolean

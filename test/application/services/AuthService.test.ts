@@ -2,6 +2,7 @@ import {
   AuthRepository,
   DeviceRepository,
   EmailRepository,
+  UserRepository,
 } from "../../../src/domain/repositories";
 import { AuthService } from "../../../src/application/services/AuthService";
 import {
@@ -9,6 +10,7 @@ import {
   generateRandomString,
   generateSHA256Hash,
   generateToken,
+  maskEmail,
 } from "../../../src/shared/helpers";
 import { Device, Mfa, Session, User } from "../../../src/domain/entities";
 import fs from "fs";
@@ -22,6 +24,7 @@ jest.mock("../../../src/shared/helpers", () => ({
   generateRandomString: jest.fn(),
   generateToken: jest.fn(),
   generateSHA256Hash: jest.fn(),
+  maskEmail: jest.fn(),
 }));
 
 const user = {
@@ -78,6 +81,7 @@ describe("AuthService", () => {
   let authRepository: jest.Mocked<AuthRepository>;
   let emailRepository: jest.Mocked<EmailRepository>;
   let deviceRepository: jest.Mocked<DeviceRepository>;
+  let userRepository: jest.Mocked<UserRepository>;
   let authService: AuthService;
 
   authRepository = {
@@ -95,10 +99,14 @@ describe("AuthService", () => {
   deviceRepository = {
     findDeviceBySerie: jest.fn(),
   } as unknown as jest.Mocked<DeviceRepository>;
+  userRepository = {
+    findUserByEmailOrPhone: jest.fn(),
+  } as unknown as jest.Mocked<UserRepository>;
   authService = new AuthService(
     authRepository,
     emailRepository,
-    deviceRepository
+    deviceRepository,
+    userRepository
   );
 
   afterEach(() => {
@@ -108,6 +116,7 @@ describe("AuthService", () => {
   it("should valid a signIn", async () => {
     authRepository.signIn.mockResolvedValue(user);
     (comparePassword as jest.Mock).mockResolvedValue(true);
+    (maskEmail as jest.Mock).mockReturnValue("luis*****@g****");
     (generateRandomString as jest.Mock).mockReturnValue("1234");
     authRepository.createMfa.mockResolvedValue(mfa);
 
@@ -115,15 +124,16 @@ describe("AuthService", () => {
 
     expect(authRepository.signIn).toHaveBeenCalledWith(user.email);
     expect(comparePassword).toHaveBeenCalledWith("123456", user.password);
+    expect(maskEmail).toHaveBeenCalledWith(user.email);
     expect(authRepository.createMfa).toHaveBeenCalledTimes(1);
     expect(emailRepository.sendEmail).toHaveBeenCalledTimes(1);
     expect(response).toBe(
-      `Se ha enviado un código de verificación al correo ${user.email}`
+      `Se ha enviado un código de verificación al correo luis*****@g****`
     );
   });
 
   it("should valid a signInMfa", async () => {
-    authRepository.signIn.mockResolvedValue(user);
+    userRepository.findUserByEmailOrPhone.mockResolvedValue(user);
     authRepository.getMfaByUser.mockResolvedValue(mfa);
     deviceRepository.findDeviceBySerie.mockResolvedValue(device);
     authRepository.createSession.mockResolvedValue(session);
@@ -137,7 +147,7 @@ describe("AuthService", () => {
       "0.0.0.0"
     );
 
-    expect(authRepository.signIn).toHaveBeenCalledWith(user.email);
+    expect(userRepository.findUserByEmailOrPhone).toHaveBeenCalledTimes(1);
     expect(authRepository.getMfaByUser).toHaveBeenCalledTimes(1);
     expect(deviceRepository.findDeviceBySerie).toHaveBeenCalledWith(
       device.serie
@@ -170,28 +180,29 @@ describe("AuthService", () => {
   });
 
   it("should valid a generate forgotPassword", async () => {
-    authRepository.signIn.mockResolvedValue(user);
+    userRepository.findUserByEmailOrPhone.mockResolvedValue(user);
     (generateRandomString as jest.Mock).mockReturnValue("1234");
+    (maskEmail as jest.Mock).mockReturnValue("luis*****@g****");
     authRepository.createMfa.mockResolvedValue(mfa);
 
-    const response = await authService.forgotPassword(user.email, "email");
+    const response = await authService.forgotPassword(user.email, "email", 'forgot-password');
 
-    expect(authRepository.signIn).toHaveBeenCalledWith(user.email);
+    expect(userRepository.findUserByEmailOrPhone).toHaveBeenCalledTimes(1);
     expect(generateRandomString).toHaveBeenCalledTimes(1);
     expect(authRepository.createMfa).toHaveBeenCalledTimes(1);
     expect(emailRepository.sendEmail).toHaveBeenCalledTimes(1);
     expect(response).toBe(
-      `Se ha enviado un código de verificación al correo ${user.email}`
+      `Se ha enviado un código de verificación al correo luis*****@g****`
     );
   });
 
   it("should valid a forgotPassword", async () => {
-    authRepository.signIn.mockResolvedValue(user);
+    userRepository.findUserByEmailOrPhone.mockResolvedValue(user);
     authRepository.getMfaByUser.mockResolvedValue(mfa);
 
-    await authService.validForgotPassword(user.email, "12DAS", "email");
+    await authService.validForgotPassword(user.email, "12DAS", "email", 'forgot-password');
 
-    expect(authRepository.signIn).toHaveBeenCalledWith(user.email);
+    expect(userRepository.findUserByEmailOrPhone).toHaveBeenCalledTimes(1);
     expect(authRepository.getMfaByUser).toHaveBeenCalledTimes(1);
     expect(authRepository.updateMfa).toHaveBeenCalledTimes(1);
   });

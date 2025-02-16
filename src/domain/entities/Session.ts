@@ -15,10 +15,10 @@ export class Session {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: false, length: 255, unique: true })
+  @Column({ nullable: false, type: "text", unique: true })
   accessToken: string;
 
-  @Column({ nullable: false, length: 255, unique: true })
+  @Column({ nullable: false, type: "text", unique: true })
   refreshToken: string;
 
   @Column({ nullable: false, length: 100 })

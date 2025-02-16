@@ -1,4 +1,4 @@
-import { generateSHA256Hash } from "../../shared/helpers";
+import { ErrorResponse, generateSHA256Hash } from "../../shared/helpers";
 import { Device, PublicKey } from "../../domain/entities";
 import {
   DeviceRepository,
@@ -30,5 +30,15 @@ export class DeviceService {
     } else {
       await this.deviceRepository.createDevice(device, publicKey);
     }
+  }
+
+  async getDeviceBySerie(serie: string) {
+    const device = await this.deviceRepository.findDeviceBySerie(serie);
+
+    if (!device) {
+      return "Dispositivo no encontrado";
+    }
+
+    return device;
   }
 }

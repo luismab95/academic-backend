@@ -19,7 +19,7 @@ export class Mfa {
   method: OtpType;
 
   @Column({ nullable: false, length: 100, })
-  type: "login" | "forgot-password";
+  type: "login" | "forgot-password" | "reset-password";
 
   @Column({ nullable: false, length: 4 })
   otp: string;

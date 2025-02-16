@@ -40,4 +40,19 @@ export class PostgresUserRepository implements UserRepository {
   async getUserById(id: number): Promise<User | null> {
     return await this.userRepository.findOne({ where: { id: Number(id) } });
   }
+
+  async findUserByEmailOrPhone(
+    email: string | null,
+    phone: string | null
+  ): Promise<User | null> {
+    const whereClause = {} as User;
+    if (email !== null) {
+      whereClause.email = email;
+    }
+    if (phone !== null) {
+      whereClause.phone = phone;
+    }
+
+    return await this.userRepository.findOne({ where: whereClause });
+  }
 }

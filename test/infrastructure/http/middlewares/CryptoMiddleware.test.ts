@@ -9,6 +9,7 @@ import {
   PostgreDeviceRepository,
   PostgresPublicKeyRepository,
 } from "../../../../src/infrastructure/persistence/postgres";
+import environment from "../../../../src/shared/infrastructure/Environment";
 
 jest.mock(
   "../../../../src/infrastructure/persistence/postgres/DeviceRepository"
@@ -17,6 +18,7 @@ jest.mock(
   "../../../../src/infrastructure/persistence/postgres/PublicKeyRepository"
 );
 jest.mock("../../../../src/shared/helpers/EncryptHelper");
+jest.mock("../../../../src/shared/infrastructure/Environment");
 
 describe("CryptoMiddleware", () => {
   let req: Partial<Request>;
@@ -32,7 +34,16 @@ describe("CryptoMiddleware", () => {
     next = jest.fn();
   });
 
+  it("should call next if ENABLE_CRYPT_E2E is false", async () => {
+    (environment as any).ENABLE_CRYPT_E2E = false;
+    await DecryptDataMiddleware(req as Request, res as Response, next);
+
+    expect(next).toHaveBeenCalledWith();
+  });
+
   it("should return an error if 'x-device-serie' header is missing", async () => {
+    (environment as any).ENABLE_CRYPT_E2E = true;
+
     await DecryptDataMiddleware(req as Request, res as Response, next);
 
     expect(next).toHaveBeenCalledWith(
@@ -44,6 +55,7 @@ describe("CryptoMiddleware", () => {
   });
 
   it("should return an error if device is not found", async () => {
+    (environment as any).ENABLE_CRYPT_E2E = true;
     req.headers!["x-device-serie"] = "test-serie";
     (
       PostgreDeviceRepository.prototype.findDeviceBySerie as jest.Mock
@@ -57,6 +69,7 @@ describe("CryptoMiddleware", () => {
   });
 
   it("should return an error if public key info is not found or invalid", async () => {
+    (environment as any).ENABLE_CRYPT_E2E = true;
     req.headers!["x-device-serie"] = "test-serie";
     (
       PostgreDeviceRepository.prototype.findDeviceBySerie as jest.Mock
@@ -73,6 +86,7 @@ describe("CryptoMiddleware", () => {
   });
 
   it("should decrypt data if present", async () => {
+    (environment as any).ENABLE_CRYPT_E2E = true;
     req.headers!["x-device-serie"] = "test-serie";
     req.body = { data: "encryptedData" };
     (
@@ -95,10 +109,15 @@ describe("CryptoMiddleware", () => {
   });
 
   it("should call next with error if decryption fails", async () => {
+    (environment as any).ENABLE_CRYPT_E2E = true;
     req.headers!["x-device-serie"] = "test-serie";
     req.body = { data: "encryptedData" };
-    (PostgreDeviceRepository.prototype.findDeviceBySerie as jest.Mock).mockResolvedValue({ id: 1 });
-    (PostgresPublicKeyRepository.prototype.findByDeviceId as jest.Mock).mockResolvedValue({
+    (
+      PostgreDeviceRepository.prototype.findDeviceBySerie as jest.Mock
+    ).mockResolvedValue({ id: 1 });
+    (
+      PostgresPublicKeyRepository.prototype.findByDeviceId as jest.Mock
+    ).mockResolvedValue({
       publicKey: "publicKey",
       hash: "validHash",
     });

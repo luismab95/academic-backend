@@ -149,4 +149,58 @@ describe("UserRepository", () => {
       expect(mockRepository.update).toHaveBeenCalledWith({ id: user.id }, user);
     });
   });
+
+  describe("findUserByEmailOrPhone", () => {
+    it("should return the user by email", async () => {
+      const user = new User();
+      user.id = 1;
+      user.name = "John Doe";
+      user.email = "example@me";
+
+      mockRepository.findOne.mockResolvedValue(user);
+
+      const result = await userRepository.findUserByEmailOrPhone(
+        user.email,
+        null
+      );
+
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { email: user.email },
+      });
+      expect(result).toEqual(user);
+    });
+
+    it("should return the user by phone", async () => {
+      const user = new User();
+      user.id = 1;
+      user.name = "John Doe";
+      user.phone = "1234567890";
+
+      mockRepository.findOne.mockResolvedValue(user);
+
+      const result = await userRepository.findUserByEmailOrPhone(
+        null,
+        user.phone
+      );
+
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { phone: user.phone },
+      });
+      expect(result).toEqual(user);
+    });
+
+    it("should return null if the user does not exist", async () => {
+      mockRepository.findOne.mockResolvedValue(null);
+
+      const result = await userRepository.findUserByEmailOrPhone(
+        "example@me",
+        null
+      );
+
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { email: "example@me" },
+      });
+      expect(result).toBeNull();
+    });
+  });
 });
