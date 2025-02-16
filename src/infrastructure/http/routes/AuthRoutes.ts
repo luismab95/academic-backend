@@ -10,37 +10,38 @@ import {
   ValidForgotPasswordValidator,
 } from "../validators/AuthValidators";
 import { VerifyTokenMiddleware } from "../middlewares";
+import { DecryptDataMiddleware } from "../middlewares/CryptoMiddleware";
 
 const controller = new AuthController();
 const route = Router();
 
 route.post(
   "/sign-up",
-  ValidationMiddleware(SignUpValidator),
+  [DecryptDataMiddleware, ValidationMiddleware(SignUpValidator)],
   controller.signUp
 );
 
 route.post(
   "/sign-in",
-  ValidationMiddleware(SignInValidator),
+  [DecryptDataMiddleware, ValidationMiddleware(SignInValidator)],
   controller.signIn
 );
 
 route.post(
   "/sign-in/mfa",
-  ValidationMiddleware(SignInMfaValidator),
+  [DecryptDataMiddleware, ValidationMiddleware(SignInMfaValidator)],
   controller.signInMfa
 );
 
 route.post(
   "/forgot-password",
-  ValidationMiddleware(ForgotPasswordValidator),
+  [DecryptDataMiddleware, ValidationMiddleware(ForgotPasswordValidator)],
   controller.forgotPassword
 );
 
 route.post(
   "/valid-forgot-password",
-  ValidationMiddleware(ValidForgotPasswordValidator),
+  [DecryptDataMiddleware, ValidationMiddleware(ValidForgotPasswordValidator)],
   controller.validForgotPassword
 );
 
@@ -48,7 +49,11 @@ route.get("/public-key", controller.getPublicKey);
 
 route.delete(
   "/sign-out/:sessionId",
-  [VerifyTokenMiddleware, ValidationMiddleware(SignOutValidator)],
+  [
+    DecryptDataMiddleware,
+    VerifyTokenMiddleware,
+    ValidationMiddleware(SignOutValidator),
+  ],
   controller.signOut
 );
 

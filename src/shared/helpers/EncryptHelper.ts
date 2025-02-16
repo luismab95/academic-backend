@@ -5,6 +5,12 @@ import fs from "fs";
 import path from "path";
 import environment from "../infrastructure/Environment";
 
+export interface EncryptedData {
+  encryptedAESKey: string;
+  encryptedMessage: string;
+  iv: string;
+}
+
 export const encryptPassword = async (password: string): Promise<string> => {
   const salt = await bcrypt.genSalt(10);
   return bcrypt.hash(password, salt);
@@ -26,8 +32,14 @@ export const validHash = (text: string, hash: string) => {
   return newHash === hash;
 };
 
-export const generateKeyPairSync = () => {
+export const generateKeyPair = async () => {
   try {
+    const privateKeyPath = path.join(process.cwd(), "/keys/privateKey.pem");
+    const publicKeyPath = path.join(process.cwd(), "/keys/publicKey.pem");
+
+    if (fs.existsSync(privateKeyPath)) fs.unlinkSync(privateKeyPath);
+    if (fs.existsSync(publicKeyPath)) fs.unlinkSync(publicKeyPath);
+
     const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
       modulusLength: 4096,
       publicKeyEncoding: {
@@ -57,40 +69,108 @@ export const generateKeyPairSync = () => {
   }
 };
 
-export const encryptData = (data: any, publicKey: string): string => {
-  const stringData =
-    Array.isArray(data) || typeof data === "object"
-      ? JSON.stringify(data)
-      : data;
-  const bufferData = Buffer.from(stringData, "utf8");
-
-  const encrypted = crypto.publicEncrypt(
-    { key: publicKey, padding: crypto.constants.RSA_PKCS1_OAEP_PADDING },
-    bufferData
-  );
-  return encrypted.toString("base64");
+export const generateAESKey = () => {
+  return crypto.randomBytes(32).toString("hex");
 };
 
-export const decryptData = (dataEncrypted: string) => {
-  const privateKey = fs.readFileSync(
-    path.join(process.cwd(), "/keys/privateKey.pem"),
-    "utf8"
+export const encryptAES = (
+  text: string,
+  key: string
+): { encrypted: string; iv: string } => {
+  const iv = crypto.randomBytes(16);
+  const cipher = crypto.createCipheriv(
+    "aes-256-cbc",
+    Buffer.from(key, "hex"),
+    iv
   );
-  const bufferEncryptedData = Buffer.from(dataEncrypted, "base64");
+  let encrypted = cipher.update(text, "utf8", "base64");
+  encrypted += cipher.final("base64");
+  return { encrypted, iv: iv.toString("hex") };
+};
 
-  const decrypted = crypto.privateDecrypt(
-    {
-      key: privateKey,
-      padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-      passphrase: environment.CRYPTO_SECRET,
-    },
-    bufferEncryptedData
-  );
-  const decryptedData = decrypted.toString("utf8");
+export const decryptAES = (encryptedText: string, key: string, iv: string) => {
+  const keyBuffer = Buffer.from(key, "hex");
+  const ivBuffer = Buffer.from(iv, "hex");
 
+  const decipher = crypto.createDecipheriv("aes-256-cbc", keyBuffer, ivBuffer);
+  let decrypted = decipher.update(encryptedText, "base64", "utf8");
+  decrypted += decipher.final("utf8");
+  return decrypted;
+};
+
+export const encryptAESKeyWithRSA = (
+  aesKey: string,
+  publicKey: string
+): string => {
+  return crypto
+    .publicEncrypt(
+      {
+        key: publicKey,
+        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+      },
+      Buffer.from(aesKey, "utf-8")
+    )
+    .toString("base64");
+};
+
+export const decryptAESKeyWithRSA = (
+  encryptedAESKey: string,
+  serverPrivateKey: string
+) => {
+  return crypto
+    .privateDecrypt(
+      {
+        key: serverPrivateKey,
+        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+        passphrase: environment.CRYPTO_SECRET,
+      },
+      Buffer.from(encryptedAESKey, "base64")
+    )
+    .toString("utf-8");
+};
+
+export const encryptedData = (data: any, publicKey: string) => {
   try {
-    return JSON.parse(decryptedData);
-  } catch (jsonError) {
-    return decryptedData;
+    const stringData =
+      Array.isArray(data) || typeof data === "object"
+        ? JSON.stringify(data)
+        : data;
+
+    const aesKey = generateAESKey();
+
+    const { encrypted, iv } = encryptAES(stringData, aesKey);
+
+    const encryptedAESKey = encryptAESKeyWithRSA(aesKey, publicKey);
+
+    return {
+      encryptedAESKey,
+      encryptedMessage: encrypted,
+      iv,
+    } as EncryptedData;
+  } catch (error) {
+    throw new Error("Error encrypting data");
+  }
+};
+
+export const decryptedData = (payload: EncryptedData) => {
+  try {
+    const { encryptedAESKey, encryptedMessage, iv } = payload;
+
+    const privateKey = fs.readFileSync(
+      path.join(process.cwd(), "/keys/privateKey.pem"),
+      "utf8"
+    );
+
+    const aesKey = decryptAESKeyWithRSA(encryptedAESKey, privateKey);
+
+    const decryptedMessage = decryptAES(encryptedMessage, aesKey, iv);
+
+    try {
+      return JSON.parse(decryptedMessage);
+    } catch (jsonError) {
+      return decryptedData;
+    }
+  } catch (error) {
+    throw new Error("Error decrypting data");
   }
 };

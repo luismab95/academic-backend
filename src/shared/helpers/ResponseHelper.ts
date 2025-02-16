@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { encryptData } from "./EncryptHelper";
 import environment from "../infrastructure/Environment";
 import colors from "colors";
+import { encryptedData } from "./EncryptHelper";
 
 export class ErrorResponse extends Error {
   statusCode: number;
@@ -15,11 +15,15 @@ export class ErrorResponse extends Error {
 
 export const responseHelper = (req: Request, res: Response, data: unknown) => {
   if (environment.ENABLE_CRYPT_E2E) {
-    const encryptedData = encryptData(
-      data,
-      req.headers["x-public-key"] as string
-    );
-    res.json({ status: true, data: encryptedData });
+    const publicKey = req.headers["x-public-key"] as string;
+
+    if (!publicKey) {
+      res.json({ status: true, data });
+      return;
+    }
+    const encrypted = encryptedData(data, publicKey);
+    
+    res.json({ status: true, data: encrypted });
     return;
   }
   res.json({ status: true, data });
@@ -27,7 +31,7 @@ export const responseHelper = (req: Request, res: Response, data: unknown) => {
 
 export const errorHandler = (
   error: any,
-  _req: Request,
+  req: Request,
   res: Response,
   _next: NextFunction
 ) => {

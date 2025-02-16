@@ -1,5 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import { decryptData, ErrorResponse, validHash } from "../../../shared/helpers";
+import {
+  decryptedData,
+  EncryptedData,
+  ErrorResponse,
+  validHash,
+} from "../../../shared/helpers";
 import environment from "../../../shared/infrastructure/Environment";
 import {
   PostgreDeviceRepository,
@@ -43,11 +48,11 @@ export const DecryptDataMiddleware = async (
     }
 
     req.headers["x-public-key"] = publicKeyInfo.publicKey;
-
+    
     const { data } = req.body;
 
     if (data !== undefined) {
-      req.body = decryptData(req.body.data);
+      req.body = decryptedData(data as EncryptedData);
     }
 
     return next();

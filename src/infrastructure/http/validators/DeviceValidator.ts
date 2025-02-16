@@ -34,7 +34,7 @@ export const CreateDeviceValidator = [
   body("publicKey")
     .isString()
     .withMessage("La clave pública debe ser un texto.")
-    .matches(/-----BEGIN RSA PUBLIC KEY-----[\s\S]+-----END RSA PUBLIC KEY-----/)
+    .matches(/-----BEGIN PUBLIC KEY-----[\s\S]+-----END PUBLIC KEY-----/)
     .withMessage("La clave pública no es válida.")
     .notEmpty({ ignore_whitespace: true })
     .withMessage("La clave pública es requerida."),

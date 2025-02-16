@@ -26,6 +26,7 @@ export const SignInValidator = [
     .withMessage("Correo Electrónico es requerido"),
   body("password")
     .isString()
+    .withMessage("Contraseña debe ser un texto")
     .notEmpty({ ignore_whitespace: true })
     .withMessage("Contraseña es requerida"),
 ];

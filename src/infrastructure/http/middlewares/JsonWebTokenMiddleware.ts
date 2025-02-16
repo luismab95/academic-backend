@@ -28,8 +28,6 @@ export const VerifyTokenMiddleware = async (
 
     if (payload.exp && Date.now() >= payload.exp * 1000) {
       token = await refreshToken(payload.sessionId);
-      console.log(token);
-
       res.setHeader("REFRESH_TOKEN", token);
     }
 

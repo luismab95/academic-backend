@@ -4,7 +4,7 @@ import {
   userRoutes,
   deviceRoutes,
 } from "./infrastructure/http/routes";
-import { errorHandler, generateKeyPairSync } from "./shared/helpers";
+import { errorHandler, generateKeyPair } from "./shared/helpers";
 import { AppDataSource } from "./infrastructure/persistence/postgres/DatabaseConnection";
 import environment from "./shared/infrastructure/Environment";
 import { DecryptDataMiddleware } from "./infrastructure/http/middlewares/CryptoMiddleware";
@@ -29,15 +29,15 @@ app.get(`/${routePrefix}`, (_req: Request, res: Response) => {
     data: "Welcome, but nothing to show here",
   });
 });
-app.use(`/${routePrefix}/auth`, DecryptDataMiddleware, authRoutes);
+app.use(`/${routePrefix}/auth`, authRoutes);
 app.use(`/${routePrefix}/user`, DecryptDataMiddleware, userRoutes);
-app.use(`/${routePrefix}/device`, DecryptDataMiddleware, deviceRoutes);
+app.use(`/${routePrefix}/device`, deviceRoutes);
 
 app.use(errorHandler);
 
 const startServer = async () => {
   try {
-    generateKeyPairSync();
+    // await generateKeyPair();
 
     await AppDataSource.initialize();
     console.log(colors.green.bold(`Database connected!`));
