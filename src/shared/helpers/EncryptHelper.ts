@@ -32,7 +32,7 @@ export const validHash = (text: string, hash: string) => {
   return newHash === hash;
 };
 
-export const generateKeyPair = async () => {
+export const generateKeyPair = () => {
   try {
     const privateKeyPath = path.join(process.cwd(), "/keys/privateKey.pem");
     const publicKeyPath = path.join(process.cwd(), "/keys/publicKey.pem");
@@ -49,7 +49,7 @@ export const generateKeyPair = async () => {
       privateKeyEncoding: {
         type: "pkcs8",
         format: "pem",
-        cipher: "AES-256-GCM",
+        cipher: "AES-256-CBC",
         passphrase: environment.CRYPTO_SECRET,
       },
     });

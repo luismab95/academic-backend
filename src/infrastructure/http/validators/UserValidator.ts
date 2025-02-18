@@ -1,7 +1,7 @@
 import { body, param } from "express-validator";
 import { CommonAuthValidator } from "./AuthValidators";
 
-export const commonUserValidator = [
+export const CommonUserValidator = [
   body("name")
     .isString()
     .withMessage("Nombres debe ser un texto")
@@ -45,7 +45,7 @@ export const UpdateUserValidator = [
     .withMessage("Teléfono es requerido")
     .isLength({ max: 20 })
     .withMessage("Teléfono debe tener un máximo de 20 caracteres"),
-  ...commonUserValidator,
+  ...CommonUserValidator,
 ];
 
 export const GetUserByIdValidator = [
@@ -75,5 +75,4 @@ export const UpdateUserPasswordValidator = [
     .withMessage(
       "Contraseña debe tener al menos una mayúscula, una minúscula, un número y un carácter especial"
     ),
-  ...CommonAuthValidator,
-];
+].concat(CommonAuthValidator);

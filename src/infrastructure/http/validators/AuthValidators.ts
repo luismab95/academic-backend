@@ -1,8 +1,8 @@
-import { body, header, param } from "express-validator";
-import { commonUserValidator } from "./UserValidator";
+import { body, header, param, ValidationChain } from "express-validator";
+import { CommonUserValidator } from "./UserValidator";
 
 export const SignUpValidator = [
-  ...commonUserValidator,
+  ...CommonUserValidator,
   body("password")
     .isString()
     .withMessage("Contraseña debe ser un texto")
@@ -71,7 +71,7 @@ export const SignOutValidator = [
     .withMessage("Id de sesión es requerido"),
 ];
 
-export const commonContactValidator = [
+export const CommonContactValidator = [
   body("contact")
     .trim()
     .notEmpty()
@@ -90,7 +90,7 @@ export const commonContactValidator = [
 ];
 
 export const ForgotPasswordValidator = [
-  ...commonContactValidator,
+  ...CommonContactValidator,
   body("method")
     .isString()
     .withMessage("Método no válido")
@@ -133,9 +133,9 @@ export const CommonAuthValidator = [
     .withMessage(
       "Tipo debe ser 'login' o 'reset-password' o 'forgot-password'"
     ),
-];
+] as ValidationChain[];
 
 export const ValidForgotPasswordValidator = [
-  ...commonContactValidator,
+  ...CommonContactValidator,
   ...CommonAuthValidator,
 ];
