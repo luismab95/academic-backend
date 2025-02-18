@@ -71,20 +71,26 @@ export const SignOutValidator = [
     .withMessage("Id de sesión es requerido"),
 ];
 
-export const ForgotPasswordValidator = [
+export const commonContactValidator = [
   body("contact")
+    .trim()
+    .notEmpty()
+    .withMessage("El contacto no puede estar vacío")
     .custom((value) => {
-      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-      const isPhoneNumber = /^\+?[1-9]\d{1,14}$/.test(value);
-      if (!isEmail && !isPhoneNumber) {
+      const emailRegex = /^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/;
+      const phoneRegex = /^\+?\d{7,15}$/;
+
+      if (!emailRegex.test(value) && !phoneRegex.test(value)) {
         throw new Error(
-          "Debe ser un correo electrónico válido o un número de celular válido"
+          "Debe ser un email válido o un número de teléfono válido"
         );
       }
       return true;
-    })
-    .notEmpty({ ignore_whitespace: true })
-    .withMessage("Contacto es requerido"),
+    }),
+];
+
+export const ForgotPasswordValidator = [
+  ...commonContactValidator,
   body("method")
     .isString()
     .withMessage("Método no válido")
@@ -103,20 +109,7 @@ export const ForgotPasswordValidator = [
     ),
 ];
 
-export const ValidForgotPasswordValidator = [
-  body("contact")
-    .custom((value) => {
-      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-      const isPhoneNumber = /^\+?[1-9]\d{1,14}$/.test(value);
-      if (!isEmail && !isPhoneNumber) {
-        throw new Error(
-          "Debe ser un correo electrónico válido o un número de celular válido"
-        );
-      }
-      return true;
-    })
-    .notEmpty({ ignore_whitespace: true })
-    .withMessage("Contacto es requerido"),
+export const CommonAuthValidator = [
   body("method")
     .isString()
     .withMessage("Método no válido")
@@ -140,4 +133,9 @@ export const ValidForgotPasswordValidator = [
     .withMessage(
       "Tipo debe ser 'login' o 'reset-password' o 'forgot-password'"
     ),
+];
+
+export const ValidForgotPasswordValidator = [
+  ...commonContactValidator,
+  ...CommonAuthValidator,
 ];

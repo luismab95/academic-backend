@@ -1,4 +1,5 @@
 import { body, param } from "express-validator";
+import { CommonAuthValidator } from "./AuthValidators";
 
 export const commonUserValidator = [
   body("name")
@@ -74,27 +75,5 @@ export const UpdateUserPasswordValidator = [
     .withMessage(
       "Contraseña debe tener al menos una mayúscula, una minúscula, un número y un carácter especial"
     ),
-  body("method")
-    .isString()
-    .withMessage("Método no válido")
-    .notEmpty({ ignore_whitespace: true })
-    .withMessage("Método es requerida")
-    .isIn(["sms", "email"])
-    .withMessage("Método debe ser 'sms' o 'email'"),
-  body("otp")
-    .isString()
-    .withMessage("Código de verificación debe ser un texto")
-    .notEmpty({ ignore_whitespace: true })
-    .withMessage("Código de verificación es requerido")
-    .isLength({ min: 4, max: 4 })
-    .withMessage("Código de verificación debe tener 4 caracteres"),
-  body("type")
-    .isString()
-    .withMessage("Tipo no válido")
-    .notEmpty({ ignore_whitespace: true })
-    .withMessage("Tipo es requerido")
-    .isIn(["login", "reset-password", "forgot-password"])
-    .withMessage(
-      "Tipo debe ser 'login' o 'reset-password' o 'forgot-password'"
-    ),
+  ...CommonAuthValidator,
 ];

@@ -49,7 +49,7 @@ export const generateKeyPair = async () => {
       privateKeyEncoding: {
         type: "pkcs8",
         format: "pem",
-        cipher: "aes-256-cbc",
+        cipher: "AES-256-GCM",
         passphrase: environment.CRYPTO_SECRET,
       },
     });
@@ -79,7 +79,7 @@ export const encryptAES = (
 ): { encrypted: string; iv: string } => {
   const iv = crypto.randomBytes(16);
   const cipher = crypto.createCipheriv(
-    "aes-256-cbc",
+    "AES-256-GCM",
     Buffer.from(key, "hex"),
     iv
   );
@@ -92,7 +92,7 @@ export const decryptAES = (encryptedText: string, key: string, iv: string) => {
   const keyBuffer = Buffer.from(key, "hex");
   const ivBuffer = Buffer.from(iv, "hex");
 
-  const decipher = crypto.createDecipheriv("aes-256-cbc", keyBuffer, ivBuffer);
+  const decipher = crypto.createDecipheriv("AES-256-GCM", keyBuffer, ivBuffer);
   let decrypted = decipher.update(encryptedText, "base64", "utf8");
   decrypted += decipher.final("utf8");
   return decrypted;

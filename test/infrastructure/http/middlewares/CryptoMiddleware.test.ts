@@ -3,7 +3,7 @@ import { DecryptDataMiddleware } from "../../../../src/infrastructure/http/middl
 import {
   ErrorResponse,
   validHash,
-  decryptData,
+  decryptedData,
 } from "../../../../src/shared/helpers";
 import {
   PostgreDeviceRepository,
@@ -99,7 +99,7 @@ describe("CryptoMiddleware", () => {
       hash: "validHash",
     });
     (validHash as jest.Mock).mockReturnValue(true);
-    (decryptData as jest.Mock).mockReturnValue({ decrypted: "data" });
+    (decryptedData as jest.Mock).mockReturnValue({ decrypted: "data" });
 
     await DecryptDataMiddleware(req as Request, res as Response, next);
 
@@ -122,7 +122,7 @@ describe("CryptoMiddleware", () => {
       hash: "validHash",
     });
     (validHash as jest.Mock).mockReturnValue(true);
-    (decryptData as jest.Mock).mockImplementation(() => {
+    (decryptedData as jest.Mock).mockImplementation(() => {
       throw new Error("Decryption error");
     });
 

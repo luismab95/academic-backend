@@ -1,4 +1,4 @@
-import { ErrorResponse, generateSHA256Hash } from "../../shared/helpers";
+import { generateSHA256Hash } from "../../shared/helpers";
 import { Device, PublicKey } from "../../domain/entities";
 import {
   DeviceRepository,

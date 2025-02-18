@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import twilio from "twilio";
 import { ErrorResponse } from "../../shared/helpers/ResponseHelper";
 import environment from "../../shared/infrastructure/Environment";
 import {
@@ -23,6 +24,11 @@ import {
   otpTypeAction,
   Session,
 } from "../../domain/entities";
+
+const client = twilio(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
 
 export class AuthService {
   constructor(
@@ -77,7 +83,6 @@ export class AuthService {
     device: string,
     clientIp: string
   ) {
-
     const { user, findMfa } = await this.validUserAndMfa(
       email,
       otp,
@@ -168,7 +173,12 @@ export class AuthService {
     let response: string = "Se ha enviado un código de verificación al";
     switch (method) {
       case "sms":
-        //TODO AGREGAR SERVICIO DE SMS
+        await client.messages.create({
+          body: `Hola, has solicitado un código de verificación. Utiliza el
+          siguiente ${newMfa.otp}, Si no solicitaste este código, por favor ignora este mensaje.`,
+          from: environment.TWILIO_PHONE_NUMBER,
+          to: user.phone,
+        });
         response = `${response} telefono ${maskString(user.phone)}`;
         break;
       case "email":
