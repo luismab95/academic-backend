@@ -1,4 +1,4 @@
-import { body, header, param, ValidationChain } from "express-validator";
+import { body, header, param } from "express-validator";
 import {
   CommonAuthVerifyValidator,
   CommonUserValidator,
