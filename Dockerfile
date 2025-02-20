@@ -24,15 +24,15 @@ RUN useradd --user-group --create-home --shell /bin/false appuser \
 USER appuser
 
 # Copy the built application from the build stage
-COPY --from=build /app/dist/ ./dist/
+COPY --from=build /app/dist/ ./app/dist/
 # Copy node_modules from the build stage
-COPY --from=build /app/node_modules/ ./node_modules/
+COPY --from=build /app/node_modules/ ./app/node_modules/
 # Copy package.json from the build stage
-COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/package.json ./app/package.json
 # Copy templates from the build stage
-COPY --from=build /app/templates/ ./templates/
+COPY --from=build /app/templates/ ./app/templates/
 # Copy fonts from the build stage
-COPY --from=build /app/fonts/ ./fonts/
+COPY --from=build /app/fonts/ ./app/fonts/
 
 # Set the working directory to /app
 WORKDIR /app
