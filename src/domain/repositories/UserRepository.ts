@@ -6,6 +6,7 @@ export interface UserRepository {
     email: string | null,
     phone: string | null
   ): Promise<User | null>;
+  findUserByIdentification(identification: string): Promise<User | null>;
   createUser(user: User): Promise<User>;
   updateUser(user: User): Promise<User>;
 }

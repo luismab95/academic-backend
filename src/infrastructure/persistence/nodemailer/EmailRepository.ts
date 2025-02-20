@@ -47,6 +47,7 @@ export class NodemailerEmailRepository implements EmailRepository {
       to: email.to,
       subject: email.subject,
       html: htmlContent,
+      attachments: email.attachments || [],
     };
     try {
       await this.transporter.sendMail(mailOptions);

@@ -12,3 +12,8 @@ export const generateRandomString = (length: number) => {
   }
   return result;
 };
+
+export const generateRandomNumber = (min: number = 1, max: number = 101) => {
+  const randomNumber = crypto.randomInt(min, max);
+  return randomNumber;
+};

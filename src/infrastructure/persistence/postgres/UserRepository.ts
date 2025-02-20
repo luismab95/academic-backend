@@ -55,4 +55,8 @@ export class PostgresUserRepository implements UserRepository {
 
     return await this.userRepository.findOne({ where: whereClause });
   }
+
+  async findUserByIdentification(identification: string): Promise<User | null> {
+    return await this.userRepository.findOne({ where: { identification } });
+  }
 }

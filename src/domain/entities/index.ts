@@ -5,3 +5,4 @@ export * from "./PublicKey";
 export * from "./Session";
 export * from "./User";
 export * from "./Email";
+export * from "./Academic";
