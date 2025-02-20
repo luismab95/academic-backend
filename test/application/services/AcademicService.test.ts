@@ -37,6 +37,7 @@ const mockRecord = {
     descripcion: "Programación, bases de datos y arquitectura de software.",
     logo_url: "https://www.ejemplo.com/logos/desarrollo_software.png",
     semestres: 10,
+    carrera: "Ingeniería de Software",
   },
   student: {
     id_estudiante: 1,
@@ -91,6 +92,7 @@ const mockRecord = {
       foto_url: "https://www.ejemplo.com/fotos/carolina_alvarez.png",
     },
   ],
+  year: "2012 - 2016",
 } as AcademicRecord;
 
 const user = {
@@ -125,14 +127,32 @@ describe("AcademicService", () => {
     jest.clearAllMocks();
   });
 
+  it("should get academic", async () => {
+    academicRepository.getAcademicRecord.mockResolvedValue(mockRecord);
+
+    const result = await academicService.getAcademic();
+    expect(result).toEqual({
+      career: mockRecord.school.carrera,
+      university: mockRecord.university.nombre,
+      year: mockRecord.year,
+      randomStudent: 1,
+    });
+    expect(academicRepository.getAcademicRecord).toHaveBeenCalledWith(
+      mockRecord.student.id_estudiante
+    );
+  });
+
   it("should get academic record", async () => {
     userRepository.findUserByIdentification.mockResolvedValue(user);
     academicRepository.getAcademicRecord.mockResolvedValue(mockRecord);
 
-    const result = await academicService.getAcademicRecord(user.identification);
+    const result = await academicService.getAcademicRecord(
+      user.identification,
+      mockRecord.student.id_estudiante
+    );
 
     expect(result).toEqual({
-      randomStudent: mockRecord.student.id_estudiante,
+      studentId: mockRecord.student.id_estudiante,
       pdfBase64: "pdfBase64",
     });
 

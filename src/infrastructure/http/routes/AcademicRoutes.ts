@@ -13,7 +13,13 @@ const controller = new AcademicController();
 const route = Router();
 
 route.get(
-  "/record/:identification",
+  "/record",
+  [DecryptDataMiddleware, VerifyTokenMiddleware],
+  controller.getAcademic
+);
+
+route.get(
+  "/record/pdf",
   [
     DecryptDataMiddleware,
     VerifyTokenMiddleware,

@@ -20,17 +20,30 @@ export class AcademicService {
     private readonly emailRepository: EmailRepository
   ) {}
 
-  async getAcademicRecord(identification: string) {
+  async getAcademic() {
     const randomStudent = generateRandomNumber();
+    const record = await this.academicRepository.getAcademicRecord(
+      randomStudent
+    );
+
+    return {
+      career: record.school.carrera,
+      university: record.university.nombre,
+      year: record.year,
+      randomStudent,
+    };
+  }
+
+  async getAcademicRecord(identification: string, studentId: number) {
     const { user, record } = await this.getUserAndAcademicRecord(
       identification,
-      randomStudent
+      studentId
     );
 
     const docDefinition = this.getDocDefinition(record, user, true);
     const pdfBase64 = await generatePdfBase64(docDefinition);
 
-    return { randomStudent, pdfBase64 };
+    return { studentId, pdfBase64 };
   }
 
   async sendAcademicRecordPdfByEmail(

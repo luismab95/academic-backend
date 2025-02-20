@@ -23,6 +23,7 @@ interface School {
   descripcion: string;
   logo_url: string;
   semestres: number;
+  carrera: string;
 }
 
 interface Student {
@@ -71,4 +72,5 @@ export interface AcademicRecord {
   semesters: Semester[];
   average: string;
   autorities: Authority[];
+  year: string;
 }
