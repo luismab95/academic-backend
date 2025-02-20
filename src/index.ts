@@ -3,6 +3,7 @@ import {
   authRoutes,
   userRoutes,
   deviceRoutes,
+  academicRoutes,
 } from "./infrastructure/http/routes";
 import { errorHandler, generateKeyPair } from "./shared/helpers";
 import { AppDataSource } from "./infrastructure/persistence/postgres/DatabaseConnection";
@@ -31,6 +32,7 @@ app.get(`/${routePrefix}`, (_req: Request, res: Response) => {
 });
 app.use(`/${routePrefix}/auth`, authRoutes);
 app.use(`/${routePrefix}/user`, DecryptDataMiddleware, userRoutes);
+app.use(`/${routePrefix}/academic`, DecryptDataMiddleware, academicRoutes);
 app.use(`/${routePrefix}/device`, deviceRoutes);
 
 app.use(errorHandler);

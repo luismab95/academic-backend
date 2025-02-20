@@ -3,5 +3,14 @@ export class Email {
   from: string;
   subject: string;
   template: string;
-  data: any;
+  data?: Record<string, any>;
+  attachments?: Attachment[];
+}
+
+interface Attachment {
+  filename: string;
+  path?: string;
+  content?: Buffer | string;
+  contentType?: string;
+  cid?: string;
 }
