@@ -21,13 +21,9 @@ export class AcademicService {
   ) {}
 
   async getAcademicRecord(identification: string) {
-    const user = await this.userRepository.findUserByIdentification(
-      identification
-    );
-    if (!user) throw new ErrorResponse("Usuario no encontrado", 404);
-
     const randomStudent = generateRandomNumber();
-    const record = await this.academicRepository.getAcademicRecord(
+    const { user, record } = await this.getUserAndAcademicRecord(
+      identification,
       randomStudent
     );
 
@@ -41,12 +37,8 @@ export class AcademicService {
     identification: string,
     randomStudent: number
   ) {
-    const user = await this.userRepository.findUserByIdentification(
-      identification
-    );
-    if (!user) throw new ErrorResponse("Usuario no encontrado", 404);
-
-    const record = await this.academicRepository.getAcademicRecord(
+    const { user, record } = await this.getUserAndAcademicRecord(
+      identification,
       randomStudent
     );
 
@@ -67,7 +59,8 @@ export class AcademicService {
       attachments: [
         {
           filename: `${user.name} ${user.lastname}-${dateFormat(
-            new Date(),"YYYY-MM-DD-HH:mm:ss"
+            new Date(),
+            "YYYY-MM-DD-HH:mm:ss"
           )}-record.pdf`,
           content: Buffer.from(pdfBase64, "base64"),
           contentType: "application/pdf",
@@ -90,7 +83,7 @@ export class AcademicService {
       const semestersCourse = [
         {
           text: `PERÍODO DE MATRÍCULA: ${semester.semester.toUpperCase()}`,
-          fontSize: 14,
+          fontSize: 10,
           bold: true,
           alignment: "left",
           margin: [0, 10, 0, 10],
@@ -104,24 +97,28 @@ export class AcademicService {
                 {
                   text: "CÓDIGO",
                   bold: true,
+                  fontSize: 10,
                   style: "tableHeader",
                   alignment: "center",
                 },
                 {
                   text: "MATERIA",
                   bold: true,
+                  fontSize: 10,
                   style: "tableHeader",
                   alignment: "center",
                 },
                 {
                   text: "CALIFICACIÓN",
                   bold: true,
+                  fontSize: 10,
                   style: "tableHeader",
                   alignment: "center",
                 },
                 {
                   text: "ESTADO",
                   bold: true,
+                  fontSize: 10,
                   style: "tableHeader",
                   alignment: "center",
                 },
@@ -129,18 +126,22 @@ export class AcademicService {
               ...semester.courses.map((course) => [
                 {
                   text: course.code,
+                  fontSize: 8,
                   alignment: "center",
                 },
                 {
                   text: course.name,
+                  fontSize: 8,
                   alignment: "left",
                 },
                 {
                   text: course.grade,
+                  fontSize: 8,
                   alignment: "center",
                 },
                 {
                   text: course.state,
+                  fontSize: 8,
                   alignment: "center",
                 },
               ]),
@@ -149,14 +150,14 @@ export class AcademicService {
         },
         {
           text: `Promedio: ${semester.average}`,
-          fontSize: 10,
+          fontSize: 8,
           bold: true,
           alignment: "left",
           margin: [0, 4, 0, 4],
         },
         {
           text: "",
-          fontSize: 18,
+          fontSize: 8,
           bold: true,
           alignment: "center",
           margin: [0, 4, 0, 4],
@@ -180,21 +181,21 @@ export class AcademicService {
         stack: [
           {
             text: record.university.nombre.toUpperCase(),
-            fontSize: 20,
+            fontSize: 16,
             bold: true,
             alignment: "center",
             margin: [0, 10, 0, 1],
           },
           {
             text: record.faculty.nombre.toUpperCase(),
-            fontSize: 18,
+            fontSize: 14,
             bold: true,
             alignment: "center",
             margin: [0, 1, 0, 1],
           },
           {
             text: record.school.nombre.toUpperCase(),
-            fontSize: 16,
+            fontSize: 12,
             bold: true,
             alignment: "center",
             margin: [0, 1, 0, 10],
@@ -205,14 +206,14 @@ export class AcademicService {
         return {
           text: `Página ${currentPage} de ${pageCount}`,
           alignment: "right",
-          fontSize: 10,
+          fontSize: 6,
           margin: [0, 0, 40, 10],
         };
       },
       content: [
         {
           text: "RÉCORD ACADÉMICO",
-          fontSize: 14,
+          fontSize: 10,
           bold: true,
           alignment: "center",
           margin: [0, 0, 0, 10],
@@ -221,14 +222,14 @@ export class AcademicService {
           columns: [
             {
               text: `MATRÍCULA: ${record.student.matricula.toUpperCase()}`,
-              fontSize: 12,
+              fontSize: 8,
               bold: false,
               alignment: "left",
               margin: [0, 0, 0, 4],
             },
             {
               text: `CÉDULA DE IDENTIDAD: ${user.identification.toUpperCase()}`,
-              fontSize: 12,
+              fontSize: 8,
               bold: false,
               alignment: "left",
               margin: [0, 0, 0, 4],
@@ -239,14 +240,14 @@ export class AcademicService {
           columns: [
             {
               text: `APELLIDOS: ${user.lastname.toUpperCase()}`,
-              fontSize: 12,
+              fontSize: 8,
               bold: false,
               alignment: "left",
               margin: [0, 0, 0, 4],
             },
             {
               text: `NOMBRES: ${user.name.toUpperCase()}`,
-              fontSize: 12,
+              fontSize: 8,
               bold: false,
               alignment: "left",
               margin: [0, 0, 0, 4],
@@ -255,7 +256,7 @@ export class AcademicService {
         },
         {
           text: "",
-          fontSize: 18,
+          fontSize: 8,
           bold: false,
           alignment: "center",
           margin: [0, 10, 0, 10],
@@ -263,16 +264,17 @@ export class AcademicService {
         ...semesters,
         {
           text: `OBSERVACIONES`,
-          fontSize: 10,
+          fontSize: 8,
           bold: true,
           alignment: "left",
+          margin: [0, 60, 0, 0],
         },
         {
-          text: ``,
-          fontSize: 10,
+          text: " ",
+          fontSize: 8,
           bold: true,
           alignment: "left",
-          margin: [0, 20, 0, 20],
+          margin: [0, 60, 0, 60],
         },
         {
           table: {
@@ -283,7 +285,7 @@ export class AcademicService {
                 {
                   text: "Nota mínima y máxima para aprobar: 7 - 10",
                   alignment: "left",
-                  fontSize: 8,
+                  fontSize: 6,
                   margin: [0, 10, 0, 10],
                 },
               ],
@@ -292,36 +294,44 @@ export class AcademicService {
         },
         {
           text: `PROMEDIO GENERAL: ${record.average}`,
-          fontSize: 10,
+          fontSize: 8,
           bold: true,
           alignment: "left",
           margin: [0, 10, 0, 10],
         },
         {
           text: `${dateFormat(new Date(), "ll")}.`,
-          fontSize: 10,
+          fontSize: 8,
           bold: false,
           alignment: "right",
           margin: [0, 10, 4, 10],
         },
         {
           text: "",
-          fontSize: 10,
+          fontSize: 8,
           bold: true,
           alignment: "left",
           margin: [0, 40, 0, 40],
         },
+        !watermaker
+          ? {
+              columns: [
+                { qr: "text in QR", fit: 50, alignment: "center" },
+                { qr: "text in QR", fit: 50, alignment: "center" },
+              ],
+            }
+          : null,
         {
           columns: [
             {
               text: "_______________________________________",
-              fontSize: 12,
+              fontSize: 8,
               bold: false,
               alignment: "center",
             },
             {
               text: "_______________________________________",
-              fontSize: 12,
+              fontSize: 8,
               bold: false,
               alignment: "center",
             },
@@ -331,14 +341,14 @@ export class AcademicService {
           columns: [
             {
               text: `${record.autorities[0].nombre.toUpperCase()} ${record.autorities[0].apellido.toUpperCase()}`,
-              fontSize: 12,
+              fontSize: 8,
               bold: false,
               alignment: "center",
               margin: [0, 0, 0, 0],
             },
             {
               text: `${record.autorities[1].nombre.toUpperCase()} ${record.autorities[1].apellido.toUpperCase()}`,
-              fontSize: 12,
+              fontSize: 8,
               bold: false,
               alignment: "center",
               margin: [0, 0, 0, 0],
@@ -349,14 +359,14 @@ export class AcademicService {
           columns: [
             {
               text: `${record.autorities[0].cargo.toUpperCase()}`,
-              fontSize: 12,
+              fontSize: 8,
               bold: true,
               alignment: "center",
               margin: [0, 0, 0, 0],
             },
             {
               text: `${record.autorities[1].cargo.toUpperCase()}`,
-              fontSize: 12,
+              fontSize: 8,
               bold: true,
               alignment: "center",
               margin: [0, 0, 0, 0],
@@ -367,5 +377,21 @@ export class AcademicService {
     };
 
     return docDefinition;
+  }
+
+  private async getUserAndAcademicRecord(
+    identification: string,
+    randomStudent: number
+  ) {
+    const user = await this.userRepository.findUserByIdentification(
+      identification
+    );
+    if (!user) throw new ErrorResponse("Usuario no encontrado", 404);
+
+    const record = await this.academicRepository.getAcademicRecord(
+      randomStudent
+    );
+
+    return { user, record };
   }
 }

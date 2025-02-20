@@ -1,4 +1,5 @@
 import pdfMakePrinter from "pdfmake/src/printer";
+import { ErrorResponse } from "./ResponseHelper";
 
 const fonts = {
   Roboto: {
@@ -27,8 +28,8 @@ export function generatePdfBase64(docDefinition: any): Promise<string> {
       resolve(pdfBase64);
     });
 
-    pdfDoc.on("error", (err: any) => {      
-      reject(err);
+    pdfDoc.on("error", (err: any) => {
+      reject(new ErrorResponse(`Error al generar el PDF: ${err}`, 400));
     });
 
     pdfDoc.end();

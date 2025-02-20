@@ -11,7 +11,7 @@ import {
   DeviceService,
   AcademicService,
 } from "../../application/services";
-import { ExternalAcademicRepository } from "../../infrastructure/persistence/providers/ExternalAcademicRepository";
+import { ExternalAcademicRepository } from "../../infrastructure/persistence/externalServices/ExternalAcademicRepository";
 
 const userRepository = new PostgresUserRepository();
 const authRepository = new PostgresAuthRepository();

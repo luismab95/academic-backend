@@ -203,4 +203,37 @@ describe("UserRepository", () => {
       expect(result).toBeNull();
     });
   });
+
+  describe("findUserByIdentification", () => {
+    it("should return the user by identification", async () => {
+      const user = new User();
+      user.id = 1;
+      user.name = "John Doe";
+      user.identification = "1234567890";
+
+      mockRepository.findOne.mockResolvedValue(user);
+
+      const result = await userRepository.findUserByIdentification(
+        user.identification
+      );
+
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { identification: user.identification },
+      });
+      expect(result).toEqual(user);
+    });
+
+    it("should return null if the user does not exist", async () => {
+      mockRepository.findOne.mockResolvedValue(null);
+
+      const result = await userRepository.findUserByIdentification(
+        "1234567890"
+      );
+
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { identification: "1234567890" },
+      });
+      expect(result).toBeNull();
+    });
+  });
 });
