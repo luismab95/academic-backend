@@ -7,7 +7,7 @@ COPY . /app
 WORKDIR /app
 
 # Install dependencies
-RUN yarn install --ignore-scripts
+RUN yarn install
 # Build the application
 RUN yarn build
 
@@ -33,6 +33,7 @@ COPY --from=build /app/package.json ./app/package.json
 COPY --from=build /app/templates/ ./app/templates/
 # Copy fonts from the build stage
 COPY --from=build /app/fonts/ ./app/fonts/
+
 
 # Set the working directory to /app
 WORKDIR /app
