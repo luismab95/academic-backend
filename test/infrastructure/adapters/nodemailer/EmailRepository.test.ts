@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
-import { NodemailerEmailRepository } from "../../../../src/infrastructure/persistence/nodemailer/EmailRepository";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
+import { NodemailerEmailRepository } from "../../../../src/infrastructure/adapters/nodemailer/EmailRepository";
 import { Email } from "../../../../src/domain/entities";
 
 jest.mock("nodemailer");
@@ -38,7 +38,7 @@ describe("NodemailerEmailRepository", () => {
 
     await emailRepository.sendEmail(email);
 
-    expect(emailRepository['getTemplate']).toHaveBeenCalledTimes(1);
+    expect(emailRepository["getTemplate"]).toHaveBeenCalledTimes(1);
     expect(mockTransporter.sendMail).toHaveBeenCalledTimes(1);
   });
 });

@@ -53,7 +53,7 @@ export class AuthService {
     const newMfa = {
       userId: user.id,
       type: "login",
-      otp: generateRandomString(4),
+      otp: generateRandomString(6),
       expiratedAt: new Date(Date.now() + 5 * 60000),
     } as Mfa;
     await this.authRepository.createMfa(newMfa);
@@ -164,7 +164,7 @@ export class AuthService {
     const newMfa = {
       userId: user.id,
       type,
-      otp: generateRandomString(4),
+      otp: generateRandomString(6),
       method,
       expiratedAt: new Date(Date.now() + 5 * 60000),
     } as Mfa;

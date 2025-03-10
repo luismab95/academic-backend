@@ -1,4 +1,5 @@
 import { body, param } from "express-validator";
+import { validateIdentification } from "../../../shared/helpers";
 
 export const CommonUserValidator = [
   body("name")
@@ -68,8 +69,8 @@ export const CommonAuthVerifyValidator = [
     .withMessage("Código de verificación debe ser un texto")
     .notEmpty({ ignore_whitespace: true })
     .withMessage("Código de verificación es requerido")
-    .isLength({ min: 4, max: 4 })
-    .withMessage("Código de verificación debe tener 4 caracteres"),
+    .isLength({ min: 6, max: 6 })
+    .withMessage("Código de verificación debe tener 6 caracteres"),
   body("type")
     .isString()
     .withMessage("Tipo no válido")

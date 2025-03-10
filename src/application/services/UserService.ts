@@ -4,6 +4,7 @@ import {
   encryptPassword,
   dateFormat,
   ErrorResponse,
+  validateIdentification,
 } from "../../shared/helpers";
 
 export class UserService {
@@ -19,6 +20,10 @@ export class UserService {
     password: string,
     identification: string
   ) {
+    const verifyIdentification = validateIdentification(identification);
+    if (!verifyIdentification)
+      throw new ErrorResponse("Número de identificaciòn no válido.", 400);
+
     const encryptedPassword = await encryptPassword(password);
     const newUser = {
       name,

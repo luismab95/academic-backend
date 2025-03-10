@@ -28,6 +28,7 @@
     "nodemailer": "^6.10.0",
     "pdfmake": "^0.2.18",
     "pg": "^8.13.1",
+    "reflect-metadata": "^0.2.2",
     "twilio": "^5.4.4",
     "typeorm": "^0.3.20"
   },

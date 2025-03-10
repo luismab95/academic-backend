@@ -5,7 +5,7 @@ export const generateRandomString = (length: number) => {
   crypto.getRandomValues(array);
 
   const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let result = "";
   for (let i = 0; i < length; i++) {
     result += characters.charAt(array[i] % characters.length);

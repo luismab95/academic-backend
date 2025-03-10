@@ -43,12 +43,12 @@ export class NodemailerEmailRepository implements EmailRepository {
     const htmlContent = await this.getTemplate(email.template, email.data);
 
     const mailOptions = {
-      from: email.from,
+      from: `"${email.from}" <${environment.MAIL_USER}>`,
       to: email.to,
       subject: email.subject,
       html: htmlContent,
       attachments: email.attachments || [],
-    };
+    } as unknown as SMTPTransport.SentMessageInfo;
     try {
       await this.transporter.sendMail(mailOptions);
     } catch (error) {

@@ -13,6 +13,11 @@ export const GetAcademicRecordByIdentificationValidator = [
     .withMessage("Estudiante debe ser un texto numérico")
     .notEmpty({ ignore_whitespace: true })
     .withMessage("Estudiante es requerido"),
+  query("universityId")
+    .isInt()
+    .withMessage("Universidad debe ser un texto numérico")
+    .notEmpty({ ignore_whitespace: true })
+    .withMessage("Universidad es requerido"),
 ];
 
 export const SendAcademicRecordPdfValidator = [
@@ -28,4 +33,9 @@ export const SendAcademicRecordPdfValidator = [
     .withMessage("Estudiante debe ser un texto numérico")
     .notEmpty({ ignore_whitespace: true })
     .withMessage("Estudiante es requerido"),
+  body("universityId")
+    .isInt()
+    .withMessage("Universidad debe ser un texto numérico")
+    .notEmpty({ ignore_whitespace: true })
+    .withMessage("Universidad es requerido"),
 ];
