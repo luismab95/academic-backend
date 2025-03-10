@@ -187,10 +187,16 @@ export class AuthService {
             otp: newMfa.otp,
             year: new Date().getFullYear(),
             fullname: `${user.name} ${user.lastname}`,
-            subject: "Codigo de verificación para cambio de contraseña",
+            subject:
+              type === "login"
+                ? "Codigo de verificación para inicio de sesión"
+                : "Codigo de verificación para cambio de contraseña",
           },
           from: environment.MAIL_FROM,
-          subject: "Codigo de verificación para cambio de contraseña",
+          subject:
+            type === "login"
+              ? "Codigo de verificación para inicio de sesión"
+              : "Codigo de verificación para cambio de contraseña",
           to: user.email,
           template: "mfa",
         } as Email);
