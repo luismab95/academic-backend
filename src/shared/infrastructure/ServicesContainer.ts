@@ -4,7 +4,7 @@ import {
   PostgreDeviceRepository,
   PostgresPublicKeyRepository,
 } from "../../infrastructure/persistence/postgres";
-import { NodemailerEmailRepository } from "../../infrastructure/persistence/nodemailer/EmailRepository";
+import { NodemailerEmailRepository } from "../../infrastructure/adapters/nodemailer/EmailRepository";
 import {
   UserService,
   AuthService,

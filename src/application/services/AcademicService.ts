@@ -2,7 +2,6 @@ import {
   dateFormat,
   ErrorResponse,
   generatePdfBase64,
-  generateRandomNumber,
   maskEmail,
 } from "../../shared/helpers";
 import {
@@ -21,22 +20,31 @@ export class AcademicService {
   ) {}
 
   async getAcademic() {
-    const randomStudent = generateRandomNumber();
-    const record = await this.academicRepository.getAcademicRecord(
-      randomStudent
-    );
+    const record = await this.academicRepository.getAcademicRecords();
+    const response = record.map((record, index) => {
+      return {
+        id: index + 1,
+        university: record.university.nombre,
+        universityId: record.university.id_universidad,
+        faculty: record.faculty.nombre,
+        school: record.school.carrera,
+        year: record.year,
+        img: record.university.logo_url,
+        randomStudent: record.student.id_estudiante,
+      };
+    });
 
-    return {
-      career: record.school.carrera,
-      university: record.university.nombre,
-      year: record.year,
-      randomStudent,
-    };
+    return response;
   }
 
-  async getAcademicRecord(identification: string, studentId: number) {
+  async getAcademicRecord(
+    identification: string,
+    universityId: number,
+    studentId: number
+  ) {
     const { user, record } = await this.getUserAndAcademicRecord(
       identification,
+      universityId,
       studentId
     );
 
@@ -48,11 +56,13 @@ export class AcademicService {
 
   async sendAcademicRecordPdfByEmail(
     identification: string,
-    randomStudent: number
+    universityId: number,
+    studentId: number
   ) {
     const { user, record } = await this.getUserAndAcademicRecord(
       identification,
-      randomStudent
+      universityId,
+      studentId
     );
 
     const docDefinition = this.getDocDefinition(record, user, false);
@@ -394,6 +404,7 @@ export class AcademicService {
 
   private async getUserAndAcademicRecord(
     identification: string,
+    universityId: number,
     randomStudent: number
   ) {
     const user = await this.userRepository.findUserByIdentification(
@@ -402,7 +413,8 @@ export class AcademicService {
     if (!user) throw new ErrorResponse("Usuario no encontrado", 404);
 
     const record = await this.academicRepository.getAcademicRecord(
-      randomStudent
+      randomStudent,
+      universityId
     );
 
     return { user, record };

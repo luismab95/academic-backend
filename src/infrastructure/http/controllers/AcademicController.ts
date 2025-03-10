@@ -14,10 +14,10 @@ export class AcademicController {
 
   async getAcademicRecord(req: Request, res: Response, next: NextFunction) {
     try {
-      const { identification, studentId } = req.query;
-
+      const { universityId, studentId, identification } = req.query;
       const data = await ServiceContainer.academic.getAcademicRecord(
-        String(identification),
+        identification as string,
+        Number(universityId),
         Number(studentId)
       );
 
@@ -33,10 +33,11 @@ export class AcademicController {
     next: NextFunction
   ) {
     try {
-      const { identification, studentId } = req.body;
+      const { identification, studentId, universityId } = req.body;
 
       const data = await ServiceContainer.academic.sendAcademicRecordPdfByEmail(
         identification,
+        Number(universityId),
         Number(studentId)
       );
 

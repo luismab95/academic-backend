@@ -17,42 +17,88 @@ describe("ExternalAcademicRepository", () => {
     externalAcademicRepository = new ExternalAcademicRepository();
   });
 
-  it("should return the academic record by identification", async () => {
-    const academicRecord = {
-      student: {
-        id_estudiante: 1,
-        identificacion: "123456789",
-        nombre: "John Doe",
-        apellido: "Vares Daer",
-      },
-    } as AcademicRecord;
+  describe("getAcademicRecord", () => {
+    it("should return the academic records", async () => {
+      const academicRecord = {
+        student: {
+          id_estudiante: 1,
+          identificacion: "123456789",
+          nombre: "John Doe",
+          apellido: "Vares Daer",
+        },
+        university: {
+          id_universidad: 1,
+        },
+      } as AcademicRecord;
 
-    (axiosRequetsForGet as jest.Mock).mockResolvedValue({
-      data: { data: academicRecord },
+      (axiosRequetsForGet as jest.Mock).mockResolvedValue({
+        data: { data: [academicRecord] },
+      });
+
+      const result = await externalAcademicRepository.getAcademicRecords();
+
+      expect(axiosRequetsForGet).toHaveBeenCalledWith(
+        `${environment.ACADEMIC_SERVICE}`
+      );
+      expect(result).toEqual([academicRecord]);
     });
 
-    const result = await externalAcademicRepository.getAcademicRecord(
-      academicRecord.student.id_estudiante
-    );
+    it("should return thrown error if the academic records called failed", async () => {
+      (axiosRequetsForGet as jest.Mock).mockRejectedValue(
+        new ErrorResponse("Error al obtener datos del servicio académico", 400)
+      );
 
-    expect(axiosRequetsForGet).toHaveBeenCalledWith(
-      `${environment.ACADEMIC_SERVICE}${academicRecord.student.id_estudiante}`
-    );
-    expect(result).toEqual(academicRecord);
+      await expect(
+        externalAcademicRepository.getAcademicRecords()
+      ).rejects.toThrow(ErrorResponse);
+
+      expect(axiosRequetsForGet).toHaveBeenCalledWith(
+        `${environment.ACADEMIC_SERVICE}`
+      );
+    });
   });
 
-  it("should return thrown error if the academic record called failed", async () => {
-    (axiosRequetsForGet as jest.Mock).mockRejectedValue(
-      new ErrorResponse("Error al obtener datos del servicio académico", 400)
-    );
+  describe("getAcademicRecord", () => {
+    it("should return the academic record by identification", async () => {
+      const academicRecord = {
+        student: {
+          id_estudiante: 1,
+          identificacion: "123456789",
+          nombre: "John Doe",
+          apellido: "Vares Daer",
+        },
+        university: {
+          id_universidad: 1,
+        },
+      } as AcademicRecord;
 
-    await expect(
-      externalAcademicRepository.getAcademicRecord(1)
-    ).rejects.toThrow(ErrorResponse);
+      (axiosRequetsForGet as jest.Mock).mockResolvedValue({
+        data: { data: academicRecord },
+      });
 
-    expect(axiosRequetsForGet).toHaveBeenCalledWith(
-      `${environment.ACADEMIC_SERVICE}1`
-    );
+      const result = await externalAcademicRepository.getAcademicRecord(
+        academicRecord.student.id_estudiante,
+        academicRecord.university.id_universidad
+      );
 
+      expect(axiosRequetsForGet).toHaveBeenCalledWith(
+        `${environment.ACADEMIC_SERVICE}detail?studentId=${academicRecord.student.id_estudiante}&universityId=${academicRecord.university.id_universidad}`
+      );
+      expect(result).toEqual(academicRecord);
+    });
+
+    it("should return thrown error if the academic record called failed", async () => {
+      (axiosRequetsForGet as jest.Mock).mockRejectedValue(
+        new ErrorResponse("Error al obtener datos del servicio académico", 400)
+      );
+
+      await expect(
+        externalAcademicRepository.getAcademicRecord(1, 1)
+      ).rejects.toThrow(ErrorResponse);
+
+      expect(axiosRequetsForGet).toHaveBeenCalledWith(
+        `${environment.ACADEMIC_SERVICE}detail?studentId=1&universityId=1`
+      );
+    });
   });
 });

@@ -8,12 +8,14 @@ import {
   dateFormat,
   encryptPassword,
   ErrorResponse,
+  validateIdentification,
 } from "../../../src/shared/helpers";
 
 jest.mock("../../../src/domain/repositories/AuthRepository");
 jest.mock("../../../src/shared/helpers", () => ({
   encryptPassword: jest.fn(),
   dateFormat: jest.fn(),
+  validateIdentification: jest.fn(),
 }));
 
 const user = {
@@ -60,6 +62,7 @@ describe("UserService", () => {
 
   it("should create a new user", async () => {
     (encryptPassword as jest.Mock).mockResolvedValue("encryptedPassword");
+    (validateIdentification as jest.Mock).mockResolvedValue(true);
     userRepository.createUser.mockResolvedValue(user);
 
     const newUser = {
