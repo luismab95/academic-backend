@@ -110,6 +110,7 @@ describe("AcademicService", () => {
 
   academicRepository = {
     getAcademicRecord: jest.fn(),
+    getAcademicRecords: jest.fn(),
   } as unknown as jest.Mocked<AcademicRepository>;
   userRepository = {
     findUserByIdentification: jest.fn(),
@@ -128,18 +129,24 @@ describe("AcademicService", () => {
   });
 
   it("should get academic", async () => {
-    academicRepository.getAcademicRecord.mockResolvedValue(mockRecord);
+    academicRepository.getAcademicRecords.mockResolvedValue([mockRecord]);
 
     const result = await academicService.getAcademic();
-    expect(result).toEqual({
-      career: mockRecord.school.carrera,
-      university: mockRecord.university.nombre,
-      year: mockRecord.year,
-      randomStudent: 1,
-    });
-    expect(academicRepository.getAcademicRecord).toHaveBeenCalledWith(
-      mockRecord.student.id_estudiante
-    );
+    console.log(result);
+
+    expect(result).toEqual([
+      {
+        id: 1,
+        university: mockRecord.university.nombre,
+        universityId: mockRecord.university.id_universidad,
+        faculty: mockRecord.faculty.nombre,
+        school: mockRecord.school.carrera,
+        year: mockRecord.year,
+        img: mockRecord.university.logo_url,
+        randomStudent: 1,
+      },
+    ]);
+    expect(academicRepository.getAcademicRecords).toHaveBeenCalledWith();
   });
 
   it("should get academic record", async () => {
@@ -148,6 +155,7 @@ describe("AcademicService", () => {
 
     const result = await academicService.getAcademicRecord(
       user.identification,
+      mockRecord.university.id_universidad,
       mockRecord.student.id_estudiante
     );
 
@@ -160,7 +168,8 @@ describe("AcademicService", () => {
       user.identification
     );
     expect(academicRepository.getAcademicRecord).toHaveBeenCalledWith(
-      mockRecord.student.id_estudiante
+      mockRecord.student.id_estudiante,
+      mockRecord.university.id_universidad
     );
   });
 
@@ -170,6 +179,7 @@ describe("AcademicService", () => {
 
     const result = await academicService.sendAcademicRecordPdfByEmail(
       user.identification,
+      mockRecord.university.id_universidad,
       mockRecord.student.id_estudiante
     );
 
@@ -178,7 +188,8 @@ describe("AcademicService", () => {
     );
 
     expect(academicRepository.getAcademicRecord).toHaveBeenCalledWith(
-      mockRecord.student.id_estudiante
+      mockRecord.student.id_estudiante,
+      mockRecord.university.id_universidad
     );
     expect(userRepository.findUserByIdentification).toHaveBeenCalledWith(
       user.identification

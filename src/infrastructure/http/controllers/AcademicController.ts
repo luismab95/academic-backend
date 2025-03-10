@@ -16,7 +16,7 @@ export class AcademicController {
     try {
       const { universityId, studentId, identification } = req.query;
       const data = await ServiceContainer.academic.getAcademicRecord(
-        String(identification),
+        identification as string,
         Number(universityId),
         Number(studentId)
       );

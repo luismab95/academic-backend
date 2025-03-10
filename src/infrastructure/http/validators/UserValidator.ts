@@ -1,5 +1,4 @@
 import { body, param } from "express-validator";
-import { validateIdentification } from "../../../shared/helpers";
 
 export const CommonUserValidator = [
   body("name")
