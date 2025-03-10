@@ -16,10 +16,9 @@ export class NodemailerEmailRepository implements EmailRepository {
 
   constructor() {
     this.transporter = nodemailer.createTransport({
-      service: "gmail",
+      service: environment.MAIL_HOST,
       secure: environment.NODE_ENV === 'production',
       requireTLS: environment.NODE_ENV === 'production',
-      port: 465,
       auth: {
         user: environment.MAIL_USER,
         pass: environment.MAIL_PASSWORD,
@@ -43,7 +42,7 @@ export class NodemailerEmailRepository implements EmailRepository {
     const htmlContent = await this.getTemplate(email.template, email.data);
 
     const mailOptions = {
-      from: `"${email.from}" <${environment.MAIL_USER}>`,
+      from: `"${environment.MAIL_NAME}" <${environment.MAIL_FROM}>`,
       to: email.to,
       subject: email.subject,
       html: htmlContent,
