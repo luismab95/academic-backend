@@ -92,6 +92,14 @@ describe("AuthService", () => {
     createSession: jest.fn(),
     getSessionByIdOrToken: jest.fn(),
     updateSession: jest.fn(),
+    findBloquedUser: jest.fn(),
+    updateBloquedUser: jest.fn(),
+    createBloquedUser: jest.fn(),
+    findAuthAttempt: jest.fn(),
+    updateAllActiveAuthAttempt: jest.fn(),
+    updateAuthAttempt: jest.fn(),
+    createAuthAttempt: jest.fn(),
+    
   } as unknown as jest.Mocked<AuthRepository>;
   emailRepository = {
     sendEmail: jest.fn(),
