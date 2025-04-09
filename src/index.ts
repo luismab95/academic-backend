@@ -9,6 +9,7 @@ import { errorHandler, generateKeyPair } from "./shared/helpers";
 import { AppDataSource } from "./infrastructure/persistence/postgres/DatabaseConnection";
 import environment from "./shared/infrastructure/Environment";
 import { DecryptDataMiddleware } from "./infrastructure/http/middlewares/CryptoMiddleware";
+import helmet from "helmet";
 import colors from "colors";
 import cors from "cors";
 
@@ -23,6 +24,7 @@ const corsOptions = {
 app.disable("x-powered-by");
 app.use(express.json());
 app.use(cors(corsOptions));
+app.use(helmet());
 
 app.get(`/${routePrefix}`, (_req: Request, res: Response) => {
   res.status(200).json({

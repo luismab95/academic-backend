@@ -1,16 +1,22 @@
-import { OtpType, otpTypeAction, User } from "../../domain/entities";
-import { UserRepository, AuthRepository } from "../../domain/repositories";
+import { Email, OtpType, otpTypeAction, User } from "../../domain/entities";
+import {
+  UserRepository,
+  AuthRepository,
+  EmailRepository,
+} from "../../domain/repositories";
 import {
   encryptPassword,
   dateFormat,
   ErrorResponse,
   validateIdentification,
 } from "../../shared/helpers";
+import environment from "../../shared/infrastructure/Environment";
 
 export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly authRepository: AuthRepository
+    private readonly authRepository: AuthRepository,
+    private readonly emailRepository: EmailRepository
   ) {}
 
   async createUser(
@@ -33,7 +39,21 @@ export class UserService {
       password: encryptedPassword,
     } as User;
 
-    return await this.userRepository.createUser(newUser);
+    const createdUser = await this.userRepository.createUser(newUser);
+
+    this.emailRepository.sendEmail({
+      data: {
+        year: new Date().getFullYear(),
+        fullname: `${createdUser.name} ${createdUser.lastname}`,
+        subject: `Bienvenido a ${environment.MAIL_NAME}`,
+      },
+      from: environment.MAIL_FROM,
+      subject: `Bienvenido a ${environment.MAIL_NAME}`,
+      to: createdUser.email,
+      template: "sign-up",
+    } as Email);
+
+    return createdUser;
   }
 
   async updateUser(id: number, user: User) {

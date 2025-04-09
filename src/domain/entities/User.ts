@@ -8,6 +8,8 @@ import {
 } from "typeorm";
 import { Mfa } from "./Mfa";
 import { Session } from "./Session";
+import { AuthAttempt } from "./AuthAttempt";
+import { BloquedUser } from "./BloquedUser";
 
 @Entity()
 export class User {
@@ -43,4 +45,10 @@ export class User {
 
   @OneToOne(() => Session, (session) => session.user)
   sessions: Session;
+
+  @OneToOne(() => AuthAttempt, (authAttempt) => authAttempt.user)
+  attempts: AuthAttempt;
+
+  @OneToOne(() => BloquedUser, (bloquedUser) => bloquedUser.user)
+  bloquedUsers: BloquedUser;
 }

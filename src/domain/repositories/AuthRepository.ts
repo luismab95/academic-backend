@@ -1,9 +1,24 @@
-import { Mfa, OtpType, otpTypeAction, Session, User } from "../entities";
+import {
+  AuthAttempt,
+  BloquedUser,
+  Mfa,
+  OtpType,
+  otpTypeAction,
+  Session,
+  User,
+} from "../entities";
 
 export interface AuthRepository {
   signIn(email: string): Promise<User | null>;
   createMfa(mfa: Mfa): Promise<Mfa>;
   updateMfa(mfa: Mfa): Promise<Mfa>;
+  createAuthAttempt(authAttempt: AuthAttempt): Promise<AuthAttempt>;
+  updateAuthAttempt(authAttempt: AuthAttempt): Promise<AuthAttempt>;
+  updateAllActiveAuthAttempt(userId: number): Promise<void>;
+  findAuthAttempt(userId: number): Promise<AuthAttempt | null>;
+  createBloquedUser(bloquedUser: BloquedUser): Promise<BloquedUser>;
+  updateBloquedUser(bloquedUser: BloquedUser): Promise<BloquedUser>;
+  findBloquedUser(userId: number): Promise<BloquedUser | null>;
   getMfaByUser(
     otp: string,
     userId: number,

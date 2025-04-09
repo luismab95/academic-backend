@@ -24,7 +24,7 @@ RUN useradd --user-group --create-home --shell /bin/false appuser \
 USER appuser
 
 # Copy the built application from the build stage
-COPY --from=build /app/dist/ ./app/dist/
+COPY --from=build /app/dist-obfuscated/ ./app/dist/
 # Copy node_modules from the build stage
 COPY --from=build /app/node_modules/ ./app/node_modules/
 # Copy package.json from the build stage

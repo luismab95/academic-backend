@@ -3,7 +3,7 @@ node_modules/
 
 # Distribution directory
 dist/
-
+dist-obfuscated/
 # KEYS
 keys/
 

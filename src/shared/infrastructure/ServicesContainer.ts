@@ -21,7 +21,7 @@ const emailRepository = new NodemailerEmailRepository();
 const academicRepository = new ExternalAcademicRepository();
 
 export const ServiceContainer = {
-  user: new UserService(userRepository, authRepository),
+  user: new UserService(userRepository, authRepository, emailRepository),
   auth: new AuthService(
     authRepository,
     emailRepository,

@@ -6,3 +6,5 @@ export * from "./Session";
 export * from "./User";
 export * from "./Email";
 export * from "./Academic";
+export * from "./AuthAttempt";
+export * from "./BloquedUser";

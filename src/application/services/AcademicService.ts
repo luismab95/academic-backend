@@ -78,7 +78,7 @@ export class AcademicService {
       from: environment.MAIL_FROM,
       subject: "Certificado de Calificaciones",
       to: user.email,
-      template: "academic",
+      template: "certificate",
       attachments: [
         {
           filename: `${user.name} ${user.lastname}-${dateFormat(
@@ -91,9 +91,9 @@ export class AcademicService {
       ],
     } as Email);
 
-    return `Se ha enviado el certificado de calificaciones al correo ${maskEmail(
+    return `El certificado académico ha sido enviado al correo ${maskEmail(
       user.email
-    )}`;
+    )}.`;
   }
 
   private getDocDefinition(

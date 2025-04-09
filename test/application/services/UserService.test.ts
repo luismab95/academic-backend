@@ -1,5 +1,6 @@
 import {
   AuthRepository,
+  EmailRepository,
   UserRepository,
 } from "../../../src/domain/repositories";
 import { UserService } from "../../../src/application/services/UserService";
@@ -44,6 +45,7 @@ const mfa = {
 describe("UserService", () => {
   let userRepository: jest.Mocked<UserRepository>;
   let authRepository: jest.Mocked<AuthRepository>;
+  let emailRepository: jest.Mocked<EmailRepository>;
   let userService: UserService;
 
   userRepository = {
@@ -54,7 +56,14 @@ describe("UserService", () => {
   authRepository = {
     getMfaByUser: jest.fn(),
   } as unknown as jest.Mocked<AuthRepository>;
-  userService = new UserService(userRepository, authRepository);
+  emailRepository = {
+    sendEmail: jest.fn(),
+  } as unknown as jest.Mocked<EmailRepository>;
+  userService = new UserService(
+    userRepository,
+    authRepository,
+    emailRepository
+  );
 
   afterEach(() => {
     jest.clearAllMocks();

@@ -1,7 +1,8 @@
-import { NextFunction, Request, Response } from "express";
-import environment from "../infrastructure/Environment";
-import colors from "colors";
 import { encryptedData } from "./EncryptHelper";
+import { NextFunction, Request, Response } from "express";
+import colors from "colors";
+import environment from "../infrastructure/Environment";
+import logger from "../../infrastructure/adapters/logger/LoggingRepository";
 
 export class ErrorResponse extends Error {
   statusCode: number;
@@ -22,7 +23,7 @@ export const responseHelper = (req: Request, res: Response, data: unknown) => {
       return;
     }
     const encrypted = encryptedData(data, publicKey);
-    
+
     res.json({ status: true, data: encrypted });
     return;
   }
@@ -35,6 +36,7 @@ export const errorHandler = (
   res: Response,
   _next: NextFunction
 ) => {
+  logger.error(error.stack);
   console.error(colors.red.bold(error.stack));
 
   const statusCode = error.statusCode || 500;

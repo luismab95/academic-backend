@@ -5,6 +5,7 @@ import { ErrorResponse } from "../../shared/helpers/ResponseHelper";
 import environment from "../../shared/infrastructure/Environment";
 import {
   comparePassword,
+  dateFormat,
   generateRandomString,
   generateSHA256Hash,
   generateToken,
@@ -18,12 +19,15 @@ import {
   UserRepository,
 } from "../../domain/repositories";
 import {
+  AuthAttempt,
+  BloquedUser,
   Email,
   Mfa,
   OtpType,
   otpTypeAction,
   Session,
 } from "../../domain/entities";
+import moment from "moment-timezone";
 
 const client = twilio(
   process.env.TWILIO_ACCOUNT_SID,
@@ -44,11 +48,63 @@ export class AuthService {
       throw new ErrorResponse("Usuario no encontrado", 400);
     }
 
+    const userBloqued = await this.authRepository.findBloquedUser(user.id);
+    if (userBloqued) {
+      if (userBloqued.expiratedAt > new Date()) {
+        throw new ErrorResponse(
+          `Su cuenta se encuentra bloqueda por multiples intentos fallidos de autenticación, por favor intentelo despues de: ${dateFormat(
+            userBloqued.expiratedAt as Date
+          )}`,
+          400
+        );
+      } else {
+        const updateBloquedUser = {
+          id: userBloqued.id,
+          isActive: false,
+        } as BloquedUser;
+        await this.authRepository.updateBloquedUser(updateBloquedUser);
+      }
+    }
+
     const verifyPassword = await comparePassword(password, user.password);
 
     if (!verifyPassword) {
+      const findActiveAttempt = await this.authRepository.findAuthAttempt(
+        user.id
+      );
+      if (findActiveAttempt) {
+        if (findActiveAttempt.attempt >= 3) {
+          const newUserBloqued = {
+            userId: user.id,
+            expiratedAt: moment().add(1, "hour").toDate(),
+          } as BloquedUser;
+          await this.authRepository.createBloquedUser(newUserBloqued);
+          await this.authRepository.updateAllActiveAuthAttempt(user.id);
+          throw new ErrorResponse(
+            `Su cuenta se encuentra bloqueda por multiples intentos fallidos de autenticación, por favor intentelo despues de: ${dateFormat(
+              newUserBloqued.expiratedAt as Date
+            )}`,
+            400
+          );
+        } else {
+          await this.authRepository.updateAuthAttempt({
+            id: findActiveAttempt.id,
+            userId: user.id,
+            attempt: findActiveAttempt.attempt + 1,
+          } as AuthAttempt);
+        }
+      } else {
+        const newAttempt = {
+          userId: user.id,
+          attempt: 1,
+        } as AuthAttempt;
+        await this.authRepository.createAuthAttempt(newAttempt);
+      }
+
       throw new ErrorResponse("Contraseña incorrecta", 400);
     }
+
+    await this.authRepository.updateAllActiveAuthAttempt(user.id);
 
     const newMfa = {
       userId: user.id,
@@ -63,12 +119,12 @@ export class AuthService {
         otp: newMfa.otp,
         year: new Date().getFullYear(),
         fullname: `${user.name} ${user.lastname}`,
-        subject: "Codigo de verificación para inicio de sesión",
+        subject: "Código de Verificación para Inicio de Sesión",
       },
       from: environment.MAIL_FROM,
-      subject: "Codigo de verificación para inicio de sesión",
+      subject: "Código de Verificación para Inicio de Sesión",
       to: user.email,
-      template: "mfa",
+      template: "sign-in",
     } as Email);
 
     const maskEmailResponse = maskEmail(user.email);
@@ -189,16 +245,16 @@ export class AuthService {
             fullname: `${user.name} ${user.lastname}`,
             subject:
               type === "login"
-                ? "Codigo de verificación para inicio de sesión"
-                : "Codigo de verificación para cambio de contraseña",
+                ? "Código de Verificación para Inicio de Sesión"
+                : "Código de Verificación para Cambio de Contraseña",
           },
           from: environment.MAIL_FROM,
           subject:
             type === "login"
-              ? "Codigo de verificación para inicio de sesión"
-              : "Codigo de verificación para cambio de contraseña",
+              ? "Código de Verificación para Inicio de Sesión"
+              : "Código de Verificación para Cambio de Contraseña",
           to: user.email,
-          template: "mfa",
+          template: "sign-in",
         } as Email);
         response = `${response} correo ${maskEmail(user.email)}`;
         break;

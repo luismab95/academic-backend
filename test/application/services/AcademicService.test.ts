@@ -184,7 +184,7 @@ describe("AcademicService", () => {
     );
 
     expect(result).toBe(
-      "Se ha enviado el certificado de calificaciones al correo john.doe@****.com"
+      "El certificado académico ha sido enviado al correo john.doe@****.com."
     );
 
     expect(academicRepository.getAcademicRecord).toHaveBeenCalledWith(

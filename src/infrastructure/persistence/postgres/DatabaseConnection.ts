@@ -4,6 +4,8 @@ import {
   Device,
   Session,
   PublicKey,
+  AuthAttempt,
+  BloquedUser,
 } from "../../../domain/entities";
 import environment from "../../../shared/infrastructure/Environment";
 import { DataSource } from "typeorm";
@@ -15,7 +17,7 @@ export const AppDataSource = new DataSource({
   username: environment.DATABASE_USERNAME,
   password: environment.DATABASE_PASSWORD,
   database: environment.DATABASE_DBNAME,
-  entities: [User, Mfa, Session, Device, PublicKey],
+  entities: [User, Mfa, Session, Device, PublicKey, AuthAttempt, BloquedUser],
   synchronize: true,
   logging: false,
 });
