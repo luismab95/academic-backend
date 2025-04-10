@@ -1,9 +1,14 @@
+import moment from "moment-timezone";
 import { createLogger, format, transports } from "winston";
 
 const { combine, timestamp, printf, colorize } = format;
 
 const customFormat = printf(({ level, message, timestamp }) => {
-  return `[${timestamp}] ${level}: ${message}`;
+  const formattedTimestamp = moment(timestamp).format("yyyy-MM-dd HH:mm:ss");
+  const formattedMessage =
+    typeof message === "object" ? JSON.stringify(message) : message.toString();
+
+  return `[${formattedTimestamp}] ${level}: ${formattedMessage}`;
 });
 
 const logger = createLogger({
