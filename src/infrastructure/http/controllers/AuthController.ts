@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { responseHelper } from "../../../shared/helpers";
+import { maskEmail, responseHelper } from "../../../shared/helpers";
 import { ServiceContainer } from "../../../shared/infrastructure/ServicesContainer";
 import { SignIn, SignInMfa, SignUp } from "../../../domain/entities";
 
@@ -19,7 +19,7 @@ export class AuthController {
       responseHelper(
         req,
         res,
-        `Se registro el usuario ${user.email} correctamente`
+        `Se registro el usuario ${maskEmail(user.email)} correctamente`
       );
     } catch (error) {
       next(error);
@@ -30,7 +30,6 @@ export class AuthController {
     try {
       const { email, password } = req.body as SignIn;
       const data = await ServiceContainer.auth.signIn(email, password);
-
       responseHelper(req, res, data);
     } catch (error) {
       next(error);
