@@ -48,7 +48,9 @@ export const DecryptDataMiddleware = async (
     }
 
     req.headers["x-public-key"] = publicKeyInfo.publicKey;
-    
+
+    if (req.body === undefined) return next();
+
     const { data } = req.body;
 
     if (data !== undefined) {

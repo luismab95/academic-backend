@@ -17,12 +17,17 @@ export class NodemailerEmailRepository implements EmailRepository {
   constructor() {
     this.transporter = nodemailer.createTransport({
       service: environment.MAIL_HOST,
-      secure: environment.NODE_ENV === 'production',
-      requireTLS: environment.NODE_ENV === 'production',
+      secure: environment.NODE_ENV === "production",
+      requireTLS: environment.NODE_ENV === "production",
+      port: environment.MAIL_PORT,
       auth: {
         user: environment.MAIL_USER,
         pass: environment.MAIL_PASSWORD,
       },
+      connectionTimeout: 60000,
+      socketTimeout: 60000,
+      logger: environment.NODE_ENV !== "production",
+      debug: environment.NODE_ENV !== "production",
     });
   }
 
