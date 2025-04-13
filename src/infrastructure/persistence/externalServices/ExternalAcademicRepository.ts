@@ -1,7 +1,7 @@
-import { AcademicRecord } from "../../../domain/entities/Academic";
 import { AcademicRepository } from "../../../domain/repositories/AcademicRepository";
 import { axiosRequetsForGet, ErrorResponse } from "../../../shared/helpers";
 import environment from "../../../shared/infrastructure/Environment";
+import { AcademicRecord } from "../../../domain/entities";
 
 export class ExternalAcademicRepository implements AcademicRepository {
   async getAcademicRecord(

@@ -1,3 +1,4 @@
+import pdfParse from "pdf-parse";
 import pdfMakePrinter from "pdfmake/src/printer";
 import { ErrorResponse } from "./ResponseHelper";
 
@@ -34,4 +35,22 @@ export function generatePdfBase64(docDefinition: any): Promise<string> {
 
     pdfDoc.end();
   });
+}
+
+export async function extractPdfMetadata(base64String: string): Promise<any> {
+  try {
+    const cleanBase64 = base64String.split(";base64,").pop() || base64String;
+    const pdfBuffer = Buffer.from(cleanBase64, "base64");
+    const data = await pdfParse(pdfBuffer);
+
+    return {
+      metadata: data.metadata || {},
+      info: data.info || {},
+    };
+  } catch (error) {
+    throw new ErrorResponse(
+      "No se pudo completar el proceso de verificación del certificado, es posible que el documento proporcionado no sea válido.",
+      400
+    );
+  }
 }

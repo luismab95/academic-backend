@@ -34,7 +34,6 @@ export class AcademicController {
   ) {
     try {
       const { identification, studentId, universityId } = req.body;
-
       const data = await ServiceContainer.academic.sendAcademicRecordPdfByEmail(
         identification,
         Number(universityId),

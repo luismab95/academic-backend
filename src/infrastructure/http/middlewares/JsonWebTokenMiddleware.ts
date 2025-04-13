@@ -24,10 +24,10 @@ export const VerifyTokenMiddleware = async (
   }
 
   try {
-    const payload = decodeToken(token) as JwtPayload;
+    const payload = decodeToken(token) as JwtPayload;    
 
-    if (payload.exp && Date.now() >= payload.exp * 1000) {
-      token = await refreshToken(payload.sessionId);
+    if (payload.exp && Date.now() >= payload.exp * 1000) {      
+      token = await refreshToken(payload.sessionId);      
       res.setHeader("REFRESH_TOKEN", token);
     }
 
@@ -49,4 +49,4 @@ export const VerifyTokenMiddleware = async (
 };
 
 const faliedToken = (message: string) =>
-  new ErrorResponse(`Acceso no autorizado${message}`, 401);
+  new ErrorResponse(`Acceso no autorizado ${message}`, 401);

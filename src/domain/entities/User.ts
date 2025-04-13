@@ -6,20 +6,25 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Mfa } from "./Mfa";
-import { Session } from "./Session";
-import { AuthAttempt } from "./AuthAttempt";
-import { BloquedUser } from "./BloquedUser";
+import { AuthAttempt, BloquedUser, Certificate, Mfa, Session } from "./";
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true, nullable: false, length: 100 })
+  @Column({
+    unique: true,
+    nullable: false,
+    length: 100,
+  })
   email: string;
 
-  @Column({ unique: true, nullable: false, length: 10 })
+  @Column({
+    unique: true,
+    nullable: false,
+    length: 10,
+  })
   identification: string;
 
   @Column({ nullable: false, length: 255 })
@@ -31,8 +36,15 @@ export class User {
   @Column({ nullable: false, length: 100 })
   lastname: string;
 
-  @Column({ unique: true, nullable: true, length: 20 })
+  @Column({
+    unique: true,
+    nullable: true,
+    length: 20,
+  })
   phone: string;
+
+  @Column({ nullable: false, default: true })
+  status: boolean;
 
   @CreateDateColumn({ type: "timestamp with time zone" })
   createdAt: Date | string;
@@ -45,6 +57,9 @@ export class User {
 
   @OneToOne(() => Session, (session) => session.user)
   sessions: Session;
+
+  @OneToOne(() => Certificate, (certificate) => certificate.user)
+  certificates: Certificate;
 
   @OneToOne(() => AuthAttempt, (authAttempt) => authAttempt.user)
   attempts: AuthAttempt;

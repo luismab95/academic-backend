@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { ValidationMiddleware } from "../middlewares/ExpressValidatorMiddleware";
-
-import { VerifyTokenMiddleware } from "../middlewares";
-import { DecryptDataMiddleware } from "../middlewares/CryptoMiddleware";
+import {
+  VerifyTokenMiddleware,
+  DecryptDataMiddleware,
+  ValidationMiddleware,
+} from "../middlewares";
 import { AcademicController } from "../controllers/AcademicController";
 import {
   GetAcademicRecordByIdentificationValidator,

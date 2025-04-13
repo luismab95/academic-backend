@@ -1,3 +1,5 @@
+import { EncryptedData } from "../../shared/helpers";
+
 interface University {
   id_universidad: number;
   nombre: string;

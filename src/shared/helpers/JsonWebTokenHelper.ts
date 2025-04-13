@@ -11,6 +11,22 @@ export const decodeToken = (token: string): JwtPayload | string => {
   return jwt.decode(token);
 };
 
+export function validateTokenCertificate(token: string): {
+  userId: number;
+  certificateId: string;
+} {
+  try {
+    verifyToken(token);
+    const payload = decodeToken(token);
+    return payload as {
+      userId: number;
+      certificateId: string;
+    };
+  } catch (error) {
+    throw new ErrorResponse("Token expirado o no válido.", 400);
+  }
+}
+
 export const generateToken = (payload: JwtPayload, expiresIn: any): string => {
   return jwt.sign(payload, environment.JWT_SECRET, {
     expiresIn,
@@ -18,6 +34,9 @@ export const generateToken = (payload: JwtPayload, expiresIn: any): string => {
 };
 
 export const refreshToken = async (sessionId: number) => {
+  if (sessionId === undefined)
+    throw new ErrorResponse("Sesión no encontrada", 401);
+
   const session = await new PostgresAuthRepository().getSessionByIdOrToken(
     sessionId,
     null

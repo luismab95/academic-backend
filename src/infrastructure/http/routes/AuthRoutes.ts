@@ -1,6 +1,10 @@
 import { Router } from "express";
 import { AuthController } from "../controllers/AuthController";
-import { ValidationMiddleware } from "../middlewares/ExpressValidatorMiddleware";
+import {
+  VerifyTokenMiddleware,
+  DecryptDataMiddleware,
+  ValidationMiddleware,
+} from "../middlewares";
 import {
   ForgotPasswordValidator,
   SignInMfaValidator,
@@ -9,8 +13,6 @@ import {
   SignUpValidator,
   ValidForgotPasswordValidator,
 } from "../validators/AuthValidators";
-import { VerifyTokenMiddleware } from "../middlewares";
-import { DecryptDataMiddleware } from "../middlewares/CryptoMiddleware";
 
 const controller = new AuthController();
 const route = Router();

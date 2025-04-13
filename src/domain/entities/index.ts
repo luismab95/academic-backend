@@ -8,3 +8,5 @@ export * from "./Email";
 export * from "./Academic";
 export * from "./AuthAttempt";
 export * from "./BloquedUser";
+export * from "./Certificate";
+export * from "./CertificateCodeRef";

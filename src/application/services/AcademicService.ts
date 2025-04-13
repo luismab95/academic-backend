@@ -2,21 +2,32 @@ import {
   dateFormat,
   ErrorResponse,
   generatePdfBase64,
+  generateRandomString,
+  generateSHA256Hash,
+  generateToken,
   maskEmail,
 } from "../../shared/helpers";
 import {
   AcademicRepository,
+  CertificateRepository,
   EmailRepository,
   UserRepository,
 } from "../../domain/repositories/";
-import { AcademicRecord, Email, User } from "../../domain/entities";
+import {
+  AcademicRecord,
+  Certificate,
+  CertificateCodeRef,
+  Email,
+  User,
+} from "../../domain/entities";
 import environment from "../../shared/infrastructure/Environment";
 
 export class AcademicService {
   constructor(
     private readonly academicRepository: AcademicRepository,
     private readonly userRepository: UserRepository,
-    private readonly emailRepository: EmailRepository
+    private readonly emailRepository: EmailRepository,
+    private readonly certificateRepository: CertificateRepository
   ) {}
 
   async getAcademic() {
@@ -48,7 +59,7 @@ export class AcademicService {
       studentId
     );
 
-    const docDefinition = this.getDocDefinition(record, user, true);
+    const docDefinition = this.getDocDefinition(record, user, true, "");
     const pdfBase64 = await generatePdfBase64(docDefinition);
 
     return { studentId, pdfBase64 };
@@ -65,41 +76,72 @@ export class AcademicService {
       studentId
     );
 
-    const docDefinition = this.getDocDefinition(record, user, false);
+    const codeCertificate = `CERT-${user.id}-${record.student.matricula}-${universityId}`;
 
-    const pdfBase64 = await generatePdfBase64(docDefinition);
+    const findCertificate = await this.certificateRepository.findCertificate(
+      codeCertificate
+    );
+    if (!findCertificate) {
+      const docDefinition = this.getDocDefinition(
+        record,
+        user,
+        false,
+        codeCertificate
+      );
+
+      const pdfBase64 = await generatePdfBase64(docDefinition);
+
+      const newCertificate = {
+        userId: user.id,
+        code: codeCertificate,
+        hash: generateSHA256Hash(pdfBase64),
+        metadata: pdfBase64,
+      } as Certificate;
+
+      await this.certificateRepository.createCertificate(newCertificate);
+    }
+
+    const token = generateToken(
+      {
+        certificateId: codeCertificate,
+        userId: user.id,
+      },
+      "24h"
+    );
+
+    const codeRef = generateRandomString(16);
+    const newCertificateCodeRef = {
+      code: codeRef,
+      token,
+    } as CertificateCodeRef;
+
+    await this.certificateRepository.createCertificateCodeRef(
+      newCertificateCodeRef
+    );
 
     await this.emailRepository.sendEmail({
       data: {
         year: new Date().getFullYear(),
         fullname: `${user.name} ${user.lastname}`,
         subject: "Certificado de Calificaciones",
+        code: codeRef,
       },
       from: environment.MAIL_FROM,
       subject: "Certificado de Calificaciones",
       to: user.email,
       template: "certificate",
-      attachments: [
-        {
-          filename: `${user.name} ${user.lastname}-${dateFormat(
-            new Date(),
-            "YYYY-MM-DD-HH:mm:ss"
-          )}-record.pdf`,
-          content: Buffer.from(pdfBase64, "base64"),
-          contentType: "application/pdf",
-        },
-      ],
     } as Email);
 
-    return `El certificado académico ha sido enviado al correo ${maskEmail(
+    return `Se ha enviado un código de verificación al correo electrónico: ${maskEmail(
       user.email
-    )}.`;
+    )}. Utiliza este código para obtener tu certificado académico.`;
   }
 
   private getDocDefinition(
     record: AcademicRecord,
     user: User,
-    watermaker: boolean
+    watermaker: boolean,
+    certificateId: string
   ) {
     let semesters = [];
     record.semesters.forEach((semester) => {
@@ -190,6 +232,11 @@ export class AcademicService {
     });
 
     const docDefinition = {
+      info: {
+        title: "Certificado Académico",
+        author: record.university.nombre,
+        subject: certificateId,
+      },
       pageMargins: [40, 86, 40, 40],
       watermark: watermaker
         ? {

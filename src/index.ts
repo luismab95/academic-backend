@@ -4,6 +4,7 @@ import {
   userRoutes,
   deviceRoutes,
   academicRoutes,
+  certificateRoutes,
 } from "./infrastructure/http/routes";
 import { errorHandler, generateKeyPair } from "./shared/helpers";
 import { AppDataSource } from "./infrastructure/persistence/postgres/DatabaseConnection";
@@ -36,12 +37,17 @@ app.use(`/${routePrefix}/auth`, authRoutes);
 app.use(`/${routePrefix}/user`, DecryptDataMiddleware, userRoutes);
 app.use(`/${routePrefix}/academic`, DecryptDataMiddleware, academicRoutes);
 app.use(`/${routePrefix}/device`, deviceRoutes);
+app.use(
+  `/${routePrefix}/certificate`,
+  DecryptDataMiddleware,
+  certificateRoutes
+);
 
 app.use(errorHandler);
 
 const startServer = async () => {
   try {
-    generateKeyPair();
+    // generateKeyPair();
 
     await AppDataSource.initialize();
     console.log(colors.green.bold(`Database connected!`));
