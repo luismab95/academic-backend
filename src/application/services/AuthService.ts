@@ -52,9 +52,10 @@ export class AuthService {
     if (userBloqued) {
       if (userBloqued.expiratedAt > new Date()) {
         throw new ErrorResponse(
-          `Su cuenta se encuentra bloqueda por multiples intentos fallidos de autenticación, por favor intentelo despues de: ${dateFormat(
-            userBloqued.expiratedAt as Date
-          )}`,
+          `Su cuenta se encuentra bloqueda hasta el ${dateFormat(
+            userBloqued.expiratedAt as Date,
+            "LLLL"
+          )}, debido a multiples intentos fallidos de autenticación.`,
           400
         );
       } else {

@@ -16,7 +16,7 @@ export class CertificateService {
     const certificateCodeRef =
       await this.certificateRepository.findCertificateCodeRef(code);
     if (!certificateCodeRef) {
-      throw new ErrorResponse("No se encontro data.", 400);
+      throw new ErrorResponse("No se encontró ningún certificado con el código proporcionado.", 400);
     }
 
     const payload = validateTokenCertificate(certificateCodeRef.token);
@@ -25,7 +25,7 @@ export class CertificateService {
       payload.certificateId
     );
     if (!certificate) {
-      throw new ErrorResponse("No se encontro data.", 400);
+      throw new ErrorResponse("El certificado asociado a este código no está disponible", 400);
     }
 
     return certificate.metadata;
@@ -52,7 +52,7 @@ export class CertificateService {
 
     certificate.identification = maskString(certificate.identification);
     certificate.email = maskEmail(certificate.email);
-    certificate.createdAt = dateFormat(certificate.createdAt as Date);
+    certificate.createdAt = dateFormat(certificate.createdAt as Date,"LLLL");
 
     return {
       code: certificate.code,
