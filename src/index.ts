@@ -23,7 +23,7 @@ const corsOptions = {
 };
 
 app.disable("x-powered-by");
-app.use(express.json());
+app.use(express.json({ limit: '500mb' })); 
 app.use(cors(corsOptions));
 app.use(helmet());
 

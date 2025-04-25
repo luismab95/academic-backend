@@ -46,7 +46,7 @@ export class CertificateService {
     const hashToValidate = generateSHA256Hash(pdf);
     if (hashToValidate !== certificate.hash)
       throw new ErrorResponse(
-        "El certificado ha sido alterado y no coincide con nuestro registro original",
+        "El certificado ha sido modificado o comprometido y no coincide con nuestro registro original",
         400
       );
 
