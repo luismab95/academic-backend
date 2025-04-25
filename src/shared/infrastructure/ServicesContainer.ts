@@ -5,7 +5,8 @@ import {
   PostgresPublicKeyRepository,
   PostgresCertificateRepository,
 } from "../../infrastructure/persistence/postgres";
-import { NodemailerEmailRepository } from "../../infrastructure/adapters/nodemailer/EmailRepository";
+// import { NodemailerEmailRepository } from "../../infrastructure/adapters/nodemailer/EmailRepository";
+import { MailersendEmailRepository } from "../../infrastructure/adapters/mailersend/EmailRepository";
 import {
   UserService,
   AuthService,
@@ -20,7 +21,9 @@ const authRepository = new PostgresAuthRepository();
 const deviceRepository = new PostgreDeviceRepository();
 const publicKeyRepository = new PostgresPublicKeyRepository();
 const certificateRepository = new PostgresCertificateRepository();
-const emailRepository = new NodemailerEmailRepository();
+// const emailRepository = new NodemailerEmailRepository();
+const emailRepository = new MailersendEmailRepository();
+
 const academicRepository = new ExternalAcademicRepository();
 
 export const ServiceContainer = {

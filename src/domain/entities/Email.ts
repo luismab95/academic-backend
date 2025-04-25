@@ -10,7 +10,7 @@ export class Email {
 interface Attachment {
   filename: string;
   path?: string;
-  content?: Buffer | string;
+  content?:  string;
   contentType?: string;
   cid?: string;
 }

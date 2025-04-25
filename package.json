@@ -25,6 +25,7 @@
     "handlebars": "^4.7.8",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
+    "mailersend": "^2.5.0",
     "moment-timezone": "^0.5.48",
     "nodemailer": "^6.10.0",
     "pdf-parse": "^1.1.1",
