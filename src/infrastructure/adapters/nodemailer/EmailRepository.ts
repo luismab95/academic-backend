@@ -20,6 +20,9 @@ export class NodemailerEmailRepository implements EmailRepository {
       secure: environment.NODE_ENV === "production",
       requireTLS: environment.NODE_ENV === "production",
       port: environment.MAIL_PORT,
+      tls: {
+        rejectUnauthorized: environment.NODE_ENV === "production",
+      },
       auth: {
         user: environment.MAIL_USER,
         pass: environment.MAIL_PASSWORD,
