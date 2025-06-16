@@ -1,4 +1,4 @@
-# BACKEND TESIS
+# ACADEMIC BACKEND
 
 This project is a backend application built with Node.js, Express, and TypeScript.
 
@@ -13,7 +13,7 @@ This project is a backend application built with Node.js, Express, and TypeScrip
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/luismab95/tesis-backend.git
+    git clone https://github.com/luismab95/academic-backend.git
     cd your-project
     ```
 
