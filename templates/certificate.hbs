@@ -1,0 +1,64 @@
+<html lang="es">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{subject}}</title>
+    <style>
+      body { font-family: Arial, sans-serif; background-color: #f6f6f6; margin:
+      0; padding: 0; } .container { width: 100%; max-width: 600px; margin: 0
+      auto; background-color: #ffffff; padding: 20px; box-shadow: 0 0 10px
+      rgba(0, 0, 0, 0.1); } .header { text-align: center; padding: 10px 0;
+      border-bottom: 1px solid #dddddd; } .content { padding: 20px; line-height:
+      1.6; } .code { display: block; width: 180px; margin: 20px auto; padding:
+      10px; background-color: #007bff; color: #ffffff !important; text-align:
+      center; font-size: 1.5em; border-radius: 5px; } .footer { text-align:
+      center; padding: 10px 0; border-top: 1px solid #dddddd; margin-top: 20px;
+      font-size: 0.9em; color: #666666; } .expiry-warning { background-color:
+      #ffeef0; padding: 15px; border-left: 4px solid #ff4d4f; margin: 20px 0; }
+      .important-note { background-color: #fff8e1; padding: 15px; border-left:
+      4px solid #ffc107; margin: 20px 0; } .code-block { background-color:
+      #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; padding: 15px;
+      margin: 20px 0; font-family: monospace; text-align: center; }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="header">
+        <h2>{{subject}}</h2>
+      </div>
+      <div class="content">
+        <p>Hola <b> {{fullname}}</b>,</p>
+        <p>Nos complace informarle que su certificado académico está listo para
+          ser descargado.</p>
+        <div class="important-note">
+          <p><strong>Para obtener su certificado:</strong></p>
+          <ol>
+            <li>Ingrese a nuestra aplicación</li>
+            <li>Diríjase a la sección "Obtener Certificado"</li>
+            <li>Ingrese el código de verificación:</li>
+          </ol>
+        </div>
+        <div class="code-block">
+          <p><strong>Código de Verificación:</strong></p>
+          <div class="code">{{code}}</div>
+        </div>
+        <div class="expiry-warning">
+          <p><strong>Importante:</strong>
+            El código tiene una vigencia de
+            <strong>24 horas</strong>
+            a partir del momento de este mensaje. Pasado este tiempo, deberá
+            solicitar un nuevo código para acceder a su certificado.</p>
+        </div>
+        <p>Estos datos son personales e intransferibles. No comparta esta
+          información con nadie. Si necesita ayuda o tiene alguna consulta, no dude en contactarnos.</p>
+     
+      </div>
+      <div class="footer">
+        <p>&copy; {{year}}. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </body>
+
+</html>

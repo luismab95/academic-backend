@@ -4,9 +4,11 @@ node_modules/
 # Distribution directory
 dist/
 dist-obfuscated/
-
 # KEYS
 keys/
+
+# TESTS
+test/
 
 # Logs
 logs/
@@ -17,6 +19,7 @@ yarn-error.log*
 
 # Environment variables
 .env
+.env.*
 
 # Dependency directories
 jspm_packages/
@@ -90,7 +93,3 @@ yarn.lock
 # VS Code directories
 .vscode/
 .history/
-
-
-#SONNAR
-.scannerwork/

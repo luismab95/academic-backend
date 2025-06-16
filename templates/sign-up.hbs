@@ -1,0 +1,35 @@
+<html lang="es">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{subject}}</title>
+    <style>
+      body { font-family: Arial, sans-serif; background-color: #f6f6f6; margin:
+      0; padding: 0; } .container { width: 100%; max-width: 600px; margin: 0
+      auto; background-color: #ffffff; padding: 20px; box-shadow: 0 0 10px
+      rgba(0, 0, 0, 0.1); } .header { text-align: center; padding: 10px 0;
+      border-bottom: 1px solid #dddddd; } .content { padding: 20px; line-height:
+      1.6; }.footer { text-align: center; padding: 10px 0; border-top: 1px solid
+      #dddddd; margin-top: 20px; font-size: 0.9em; color: #666666; }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="header">
+        <h2>{{subject}}</h2>
+      </div>
+      <div class="content">
+        <p>Hola <b> {{fullname}}</b>,</p>
+        <p>¡Gracias por registrarte en nuestra plataforma!</p>
+        <p>Tu cuenta ha sido creada exitosamente y ahora puedes acceder a todos nuestros servicios. Estamos encantados de tenerte con nosotros.</p>
+        <p>Si no realizaste este registro, por favor ignora este mensaje.</p>
+      </div>
+      <div class="footer">
+        <p>&copy; {{year}}. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </body>
+
+</html>
